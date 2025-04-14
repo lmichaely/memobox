@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "mongodb": "^6.15.0"
+    "@supabase/supabase-js": "^2.49.4"
   }
 }

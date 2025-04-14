@@ -1,133 +1,157 @@
 // netlify/functions/data.js
 
-// Benötigtes Paket für MongoDB
-const { MongoClient } = require('mongodb');
+// Benötigtes Paket für Supabase
+const { createClient } = require('@supabase/supabase-js');
 
 // --- Konfiguration ---
-// MongoDB Connection String (WIRD ALS UMGEBUNGSVARIABLE GESETZT!)
-const MONGO_URI = process.env.MONGODB_URI;
-// Name der Datenbank in MongoDB Atlas
-const DB_NAME = 'MemoBoxDB'; // Sollte mit dem Namen im Connection String übereinstimmen
-// Name der Collection in MongoDB
-const COLLECTION_NAME = 'memobox_data';
-// Feste ID für das *eine* Dokument, das alle unsere Daten enthält
-const DOCUMENT_ID = 'main_data_singleton';
+// Supabase URL und Anon Key (WERDEN ALS UMGEBUNGSVARIABLEN GESETZT!)
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+// Name der Tabelle in Supabase
+const TABLE_NAME = 'memobox_storage';
+// Fester Wert für den Schlüssel, um unser Datenobjekt zu identifizieren
+const DATA_OBJECT_KEY = 'main_memobox_data_v1'; // Eindeutiger Schlüssel
 
 // Das Lehrer-Passwort (WIRD ALS UMGEBUNGSVARIABLE GESETZT!)
 const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD;
 
-// Globale Variable für den MongoDB Client (um Verbindungen wiederzuverwenden)
-let cachedClient = null;
-
-// Hilfsfunktion zum Verbinden mit der DB
-async function connectToDatabase() {
-  if (cachedClient && cachedClient.topology && cachedClient.topology.isConnected()) {
-      console.log('Using cached database instance');
-    return cachedClient;
-  }
-  try {
-    console.log('Connecting to database...');
-    const client = new MongoClient(MONGO_URI); // Entferne veraltete Optionen
-    cachedClient = await client.connect();
-    //console.log('New database connection established');
-    console.log('[connectToDatabase] MongoDB Connection SUCCESSFUL!');
-    return cachedClient;
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-    throw new Error('Could not connect to database.');
-  }
+// Initialisiere den Supabase Client (nur einmal pro Funktionsaufruf)
+// WICHTIG: Stelle sicher, dass die Umgebungsvariablen gesetzt sind!
+let supabase = null;
+if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+    console.error("FATAL: Supabase URL or Anon Key environment variable is missing!");
+    // Verhindere, dass die Funktion ohne Client weiterläuft
+    // (Wir könnten hier einen Fehler werfen, aber das erzeugt evtl. Kaltstarts. Besser im Handler prüfen)
 }
+
 
 // --- Hauptfunktion (Netlify Function Handler) ---
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
+  // CORS Header
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': '*', // In Produktion anpassen!
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   };
 
+  // CORS Preflight Request
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' };
   }
 
-  try {
-    const client = await connectToDatabase();
-    const db = client.db(DB_NAME);
-    const collection = db.collection(COLLECTION_NAME);
+  // Prüfen, ob Supabase Client initialisiert werden konnte
+   if (!supabase) {
+       console.error("Supabase client is not initialized. Check environment variables.");
+       return {
+           statusCode: 500,
+           headers,
+           body: JSON.stringify({ error: "Server configuration error: Supabase client not available." }),
+       };
+   }
 
-    // --- Daten LADEN (HTTP GET Request) ---
-    if (event.httpMethod === 'GET') {
-      // console.log('Handling GET request...');
-      const doc = await collection.findOne({ _id: DOCUMENT_ID });
-      if (doc) {
-        // console.log('Data fetched successfully from MongoDB.');
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(doc.appData || {}),
-        };
-      } else {
-        // console.log(`MongoDB: Document with _id '${DOCUMENT_ID}' not found. Returning empty data.`);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({}),
-        };
+  // --- Daten LADEN (HTTP GET Request) ---
+  if (event.httpMethod === 'GET') {
+    // console.log('Handling Supabase GET request...');
+    try {
+      // Hole die Zeile, deren 'data_key' unserem festen Schlüssel entspricht
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select('app_data') // Wähle nur die Spalte mit den JSONB-Daten aus
+        .eq('data_key', DATA_OBJECT_KEY) // Finde die Zeile mit unserem Schlüssel
+        .maybeSingle(); // Erwarte höchstens eine Zeile (oder null)
+
+      if (error) {
+        console.error('Supabase GET error:', error);
+        throw error; // Wirf den Fehler, um ihn unten zu fangen
       }
-    }
 
-    // --- Daten SPEICHERN (HTTP POST Request) ---
-    if (event.httpMethod === 'POST') {
-      // console.log('Handling POST request...');
+      // console.log('Data fetched successfully from Supabase.');
+      // Gib die Daten aus 'app_data' zurück oder ein leeres Objekt, falls nichts gefunden wurde
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(data?.app_data || {}), // ?. für Sicherheit, falls data null ist
+      };
+
+    } catch (error) {
+      console.error('Error during Supabase GET:', error);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Failed to fetch data from database.', details: error.message }),
+      };
+    }
+  }
+
+  // --- Daten SPEICHERN (HTTP POST Request) ---
+  if (event.httpMethod === 'POST') {
+    // console.log('Handling Supabase POST request...');
+    try {
+      // 1. Daten aus dem Request Body holen
        if (!event.body) { throw new Error("Request body is missing."); }
       const body = JSON.parse(event.body);
       const providedPassword = body.password;
-      const newAppData = body.data;
+      const newAppData = body.data; // Das ist das komplette memoBoxData Objekt
 
+      // 2. Passwort prüfen
        if (!providedPassword) {
-         console.warn('MongoDB POST: Missing password.');
+         console.warn('Supabase POST: Missing password.');
           return { statusCode: 401, headers, body: JSON.stringify({ error: 'Password is required.' }) };
        }
       if (providedPassword !== TEACHER_PASSWORD) {
-        console.warn('MongoDB POST: Invalid password attempt.');
+        console.warn('Supabase POST: Invalid password attempt.');
         return { statusCode: 403, headers, body: JSON.stringify({ error: 'Invalid password.' }) };
       }
+
+      // 3. Prüfen, ob Daten vorhanden sind
       if (newAppData === undefined || newAppData === null) {
-        console.warn('MongoDB POST: Missing data payload.');
+        console.warn('Supabase POST: Missing data payload.');
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing data payload.' }) };
       }
 
-      // console.log(`Attempting to upsert document with _id: ${DOCUMENT_ID}`);
-      const result = await collection.updateOne(
-        { _id: DOCUMENT_ID },
-        { $set: { appData: newAppData } },
-        { upsert: true }
-      );
+      // 4. Daten in Supabase aktualisieren oder einfügen (Upsert)
+      // Wir nutzen upsert(), um die Zeile zu aktualisieren, falls sie existiert
+      // (basierend auf dem data_key), oder sie neu einzufügen, falls nicht.
+      // console.log(`Attempting to upsert document with data_key: ${DATA_OBJECT_KEY}`);
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .upsert({
+            data_key: DATA_OBJECT_KEY, // Der feste Schlüssel
+            app_data: newAppData      // Die neuen MemoBox-Daten
+         }, {
+            onConflict: 'data_key' // Wenn ein Konflikt bei data_key auftritt (d.h. Zeile existiert), wird sie geupdated
+         })
+        .select() // Optional: Um die eingefügten/geupdateten Daten zurückzubekommen (brauchen wir hier nicht unbedingt)
+        .single(); // Wir erwarten genau eine Zeile als Ergebnis des Upserts
 
-       if (result.acknowledged) {
-           // console.log('Data successfully upserted in MongoDB.');
-            return {
-              statusCode: 200,
-              headers,
-              body: JSON.stringify({ success: true, message: 'Data saved successfully.' }),
-            };
-       } else {
-           throw new Error('MongoDB update operation was not acknowledged.');
-       }
+
+      if (error) {
+        console.error('Supabase POST (upsert) error:', error);
+        throw error; // Wirf den Fehler, um ihn unten zu fangen
+      }
+
+      // console.log('Data successfully upserted in Supabase.');
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ success: true, message: 'Data saved successfully.' }),
+      };
+
+    } catch (error) {
+      console.error('Error during Supabase POST:', error);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Failed to save data to the database.', details: error.message }),
+      };
     }
-
-    // --- Fallback für nicht unterstützte Methoden ---
-    return { statusCode: 405, headers, body: JSON.stringify({ error: `Method ${event.httpMethod} not allowed.` }) };
-
-  } catch (error) {
-    console.error('Unhandled error in function:', error);
-    // Detailliertere Fehlermeldung zurückgeben
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'An internal server error occurred in the function.', details: error.message }),
-    };
   }
+
+  // --- Fallback für nicht unterstützte Methoden ---
+  return { statusCode: 405, headers, body: JSON.stringify({ error: `Method ${event.httpMethod} not allowed.` }) };
 };
