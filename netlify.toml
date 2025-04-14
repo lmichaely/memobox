@@ -7,9 +7,10 @@
 [functions]
   node_bundler = "esbuild"
   [functions.node_config]
+  timeout = 25
     # Empfohlene Node.js Version für Netlify Functions
     nodeVersion = "18"
-
+    
     # Optional: Einfacherer API-Pfad (kannst du erstmal auskommentiert lassen oder entfernen)
 # [[redirects]]
 #  from = "/api/*"
