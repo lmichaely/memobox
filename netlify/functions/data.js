@@ -22,14 +22,15 @@ let cachedClient = null;
 // Hilfsfunktion zum Verbinden mit der DB
 async function connectToDatabase() {
   if (cachedClient && cachedClient.topology && cachedClient.topology.isConnected()) {
-    // console.log('Using cached database instance');
+      console.log('Using cached database instance');
     return cachedClient;
   }
   try {
-    // console.log('Connecting to database...');
+    console.log('Connecting to database...');
     const client = new MongoClient(MONGO_URI); // Entferne veraltete Optionen
     cachedClient = await client.connect();
-    // console.log('New database connection established');
+    //console.log('New database connection established');
+    console.log('[connectToDatabase] MongoDB Connection SUCCESSFUL!');
     return cachedClient;
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
