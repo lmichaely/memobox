@@ -3,54 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MemoBox - Komplett</title>
+    <title>MemoBox Online</title>
     <style>
         /* === Globale Styles === */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modernere Schrift */
-            max-width: 850px; /* Etwas breiter */
-            margin: 20px auto; /* Mehr Abstand oben/unten */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 850px;
+            margin: 20px auto;
             padding: 20px;
-            background-color: #f8f9fa; /* Hellerer Hintergrund */
-            color: #343a40; /* Dunklerer Text für besseren Kontrast */
+            background-color: #f8f9fa;
+            color: #343a40;
             line-height: 1.6;
         }
         h1, h2, h3, h4 {
-            color: #0056b3; /* Blauton für Überschriften */
+            color: #0056b3;
             text-align: center;
-            margin-bottom: 20px; /* Einheitlicher Abstand */
-            margin-top: 30px; /* Mehr Abstand nach oben */
-            font-weight: 600; /* Etwas dicker */
+            margin-bottom: 20px;
+            margin-top: 30px;
+            font-weight: 600;
         }
         h1 { font-size: 2.5em; margin-bottom: 30px; }
         h2 { font-size: 1.8em; }
-        h3 { font-size: 1.4em; text-align: left; margin-top: 25px; color: #17a2b8; } /* Info-Blau für Unterüberschriften */
-        h4 { font-size: 1.1em; text-align: left; margin-top: 15px; color: #6c757d; } /* Grau für kleinere Titel */
+        h3 { font-size: 1.4em; text-align: left; margin-top: 25px; color: #17a2b8; }
+        h4 { font-size: 1.1em; text-align: left; margin-top: 15px; color: #6c757d; }
 
         /* === Container === */
         .container-box {
             background: white;
-            border-radius: 12px; /* Abgerundeter */
-            padding: 25px 30px; /* Mehr Innenabstand */
+            border-radius: 12px;
+            padding: 25px 30px;
             margin: 25px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Weicherer Schatten */
-            border: 1px solid #e9ecef; /* Leichter Rand */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
         }
 
         /* === Buttons === */
-        .btn { /* Basis-Button-Klasse */
+        .btn {
             padding: 12px 20px;
             border: none;
             border-radius: 8px;
             color: white;
             font-size: 16px;
-            font-weight: 500; /* Mittel */
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
-            display: inline-block; /* Korrekte Darstellung */
-            margin: 5px; /* Kleiner Abstand für Umbruch */
+            display: inline-block;
+            margin: 5px;
         }
         .btn:hover {
             transform: translateY(-2px);
@@ -60,16 +60,20 @@
             transform: translateY(0px);
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+        .btn:disabled { /* Stil für deaktivierte Buttons während Laden/Speichern */
+             cursor: not-allowed;
+             opacity: 0.65;
+        }
 
         /* Button-Farben */
-        .btn-primary { background-color: #007bff; } .btn-primary:hover { background-color: #0056b3; }
-        .btn-secondary { background-color: #6c757d; } .btn-secondary:hover { background-color: #5a6268; }
-        .btn-success { background-color: #28a745; } .btn-success:hover { background-color: #218838; }
-        .btn-danger { background-color: #dc3545; } .btn-danger:hover { background-color: #c82333; }
-        .btn-warning { background-color: #ffc107; color: #212529; } .btn-warning:hover { background-color: #e0a800; }
-        .btn-info { background-color: #17a2b8; } .btn-info:hover { background-color: #138496; }
-        .btn-light { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; } .btn-light:hover { background-color: #e2e6ea; }
-        .btn-dark { background-color: #343a40; } .btn-dark:hover { background-color: #23272b; }
+        .btn-primary { background-color: #007bff; } .btn-primary:hover:not(:disabled) { background-color: #0056b3; }
+        .btn-secondary { background-color: #6c757d; } .btn-secondary:hover:not(:disabled) { background-color: #5a6268; }
+        .btn-success { background-color: #28a745; } .btn-success:hover:not(:disabled) { background-color: #218838; }
+        .btn-danger { background-color: #dc3545; } .btn-danger:hover:not(:disabled) { background-color: #c82333; }
+        .btn-warning { background-color: #ffc107; color: #212529; } .btn-warning:hover:not(:disabled) { background-color: #e0a800; }
+        .btn-info { background-color: #17a2b8; } .btn-info:hover:not(:disabled) { background-color: #138496; }
+        .btn-light { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; } .btn-light:hover:not(:disabled) { background-color: #e2e6ea; }
+        .btn-dark { background-color: #343a40; } .btn-dark:hover:not(:disabled) { background-color: #23272b; }
 
         /* Button-Gruppen */
         .button-group {
@@ -90,28 +94,41 @@
         /* === Grid für Fächer & Auswahl === */
         .item-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            /* NEU: Festes 4-spaltiges Raster */
+            grid-template-columns: repeat(4, 1fr); /* 4 Spalten, die sich den Platz teilen */
             gap: 15px;
             margin-top: 20px;
         }
-        .subject-btn { /* Erbt von .btn, fügt spezifische Styles hinzu */
-            padding: 20px 15px; /* Mehr Höhe */
-            font-weight: bold;
-            min-height: 60px; /* Mindesthöhe */
+        /* Responsivität für kleinere Bildschirme (optional, aber empfohlen) */
+        @media (max-width: 768px) {
+            .item-grid {
+                grid-template-columns: repeat(3, 1fr); /* 3 Spalten auf Tablets */
+            }
         }
-        .list-item-btn { /* Für Grade/Chapter/Question Auswahl */
-            width: 100%; /* Volle Breite im Grid */
-            background-color: #007bff; /* Standard-Blau */
-            white-space: normal; /* Textumbruch erlauben */
+         @media (max-width: 480px) {
+            .item-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 Spalten auf Handys */
+            }
+        }
+
+        .subject-btn {
+            padding: 20px 15px;
+            font-weight: bold;
+            min-height: 60px;
+        }
+        .list-item-btn {
+            width: 100%;
+            background-color: #007bff;
+            white-space: normal;
             word-wrap: break-word;
             min-height: 50px;
-            display: flex; /* Zentrieren Inhalt */
+            display: flex;
             align-items: center;
             justify-content: center;
         }
-        .list-item-btn:hover { background-color: #0056b3; }
+        .list-item-btn:hover:not(:disabled) { background-color: #0056b3; }
         .question-preview-btn {
-             background-color: #17a2b8; /* Info-Farbe */
+             background-color: #17a2b8;
              text-align: left;
              padding: 10px 15px;
              justify-content: flex-start;
@@ -119,11 +136,11 @@
              font-weight: normal;
              overflow: hidden;
              text-overflow: ellipsis;
-             /* white-space: nowrap; <-- Entfernt, um Umbruch zu erlauben */
-             display: block; /* Block statt Flex für besseren Umbruch */
+             display: block;
              line-height: 1.4;
+             min-height: 50px;
         }
-        .question-preview-btn:hover { background-color: #138496; }
+        .question-preview-btn:hover:not(:disabled) { background-color: #138496; }
 
         /* === Formulare & Editoren === */
         input[type="text"] {
@@ -149,17 +166,17 @@
             margin-top: 10px;
             background-color: #fff;
             transition: border-color 0.2s, box-shadow 0.2s;
-            line-height: 1.5; /* Bessere Lesbarkeit */
+            line-height: 1.5;
+            overflow: auto; /* Scrollbalken falls nötig */
         }
         .editable-area:focus {
             border-color: #80bdff;
             outline: 0;
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
-        /* Placeholder Styling */
         [contenteditable="true"]:empty:before {
             content: attr(placeholder);
-            color: #6c757d; /* Platzhalterfarbe */
+            color: #6c757d;
             pointer-events: none;
             display: block;
         }
@@ -170,21 +187,21 @@
             display: inline-block;
             margin: 10px 10px 5px 0;
             vertical-align: top;
-            max-width: calc(100% - 10px); /* Sicherstellen, dass es nicht überläuft */
+            max-width: calc(100% - 10px);
         }
         .image-preview {
             max-width: 100%;
-            max-height: 300px; /* Etwas größer erlaubt */
+            max-height: 300px;
             border-radius: 8px;
             border: 1px solid #e9ecef;
             display: block;
-            background-color: #f8f9fa; /* Hintergrund für Transparenz */
+            background-color: #f8f9fa;
         }
         .remove-image {
             position: absolute;
             top: -12px;
             right: -12px;
-            background: #dc3545; /* Rot */
+            background: #dc3545;
             color: white;
             border: 2px solid white;
             border-radius: 50%;
@@ -192,16 +209,16 @@
             height: 28px;
             cursor: pointer;
             font-weight: bold;
-            line-height: 24px; /* Vertikal zentrieren */
+            line-height: 24px;
             text-align: center;
             font-size: 16px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-            z-index: 10; /* Über dem Bild */
+            z-index: 10;
         }
          .remove-image:hover { background-color: #c82333; }
         .upload-btn {
             margin-top: 10px;
-            margin-right: 10px; /* Abstand zu anderen Elementen */
+            margin-right: 10px;
         }
 
         /* === Quiz Interface === */
@@ -212,7 +229,7 @@
             margin-bottom: 20px;
             background-color: #ffffff;
         }
-        .quiz-card-area h3 { /* Quiz Frage/Antwort Titel */
+        .quiz-card-area h3 {
             margin-top: 0;
             margin-bottom: 15px;
             text-align: left;
@@ -220,7 +237,7 @@
         }
         .quiz-content {
             min-height: 60px;
-            word-wrap: break-word; /* Lange Wörter umbrechen */
+            word-wrap: break-word;
         }
         #quiz-answer-area {
             margin-top: 20px;
@@ -231,29 +248,60 @@
             text-align: center;
             margin-bottom: 20px;
             font-weight: bold;
-            color: #495057; /* Dunkleres Grau */
+            color: #495057;
             font-size: 1.1em;
         }
         .completion-message {
              text-align: center;
-             font-size: 1.4em; /* Größer */
-             color: #28a745; /* Grün */
+             font-size: 1.4em;
+             color: #28a745;
              margin: 40px 0;
              font-weight: bold;
         }
 
+        /* === Lade-/Feedback-Indikatoren === */
+         #loading-indicator, #feedback-message {
+             position: fixed;
+             padding: 12px 25px;
+             color: white;
+             border-radius: 8px;
+             z-index: 1001; /* Über allem */
+             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+             opacity: 0;
+             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+             visibility: hidden;
+             text-align: center;
+        }
+         #loading-indicator {
+             top: 20px;
+             right: 20px;
+             background-color: rgba(0, 0, 0, 0.7);
+         }
+          #feedback-message {
+             bottom: 20px;
+             left: 50%;
+             transform: translateX(-50%);
+             background-color: #007bff; /* Default info */
+         }
+         #loading-indicator.visible, #feedback-message.visible {
+             opacity: 1;
+             visibility: visible;
+         }
+
         /* === Hilfsklassen === */
-        .hidden { display: none; }
+        .hidden { display: none !important; } /* Wichtig, um andere Display-Regeln zu überschreiben */
         .text-center { text-align: center; }
         .text-muted { color: #6c757d; }
         .mt-2 { margin-top: 0.5rem; }
         .mb-0 { margin-bottom: 0; }
 
-        /* === Spezifische Button-Farben für Fächer (Beispiele) === */
+        /* === Spezifische Button-Farben für Fächer === */
         .subject-btn.Deutsch { background-color: #dc3545; }
         .subject-btn.Mathematik { background-color: #007bff; }
         .subject-btn.Englisch { background-color: #6f42c1; }
-        .subject-btn.Physik { background-color: #17a2b8; }
+        /* NEU: Physik Farbe geändert */
+        .subject-btn.Physik { background-color: #6c757d; } /* Dunkles Grau (wie Informatik) */
+        /* Alternativ Gelb: .subject-btn.Physik { background-color: #ffc107; color: #212529; } */
         .subject-btn.Chemie { background-color: #fd7e14; }
         .subject-btn.Biologie { background-color: #28a745; }
         .subject-btn.Geschichte { background-color: #343a40; }
@@ -266,24 +314,18 @@
     </style>
 </head>
 <body>
-    <h1>MemoBox</h1>
+    <h1>MemoBox Online</h1> <!-- Titel angepasst -->
+
+    <!-- Lade- und Feedback-Elemente (werden per JS gesteuert) -->
+    <div id="loading-indicator">Lädt...</div>
+    <div id="feedback-message">Nachricht</div>
 
     <!-- 1. Startseite: Fächer-Auswahl -->
     <div id="subject-selection" class="container-box">
         <h2>Wähle ein Fach:</h2>
-        <div class="item-grid">
-            <button class="btn subject-btn Deutsch">Deutsch</button>
-            <button class="btn subject-btn Mathematik">Mathematik</button>
-            <button class="btn subject-btn Englisch">Englisch</button>
-            <button class="btn subject-btn Physik">Physik</button>
-            <button class="btn subject-btn Chemie">Chemie</button>
-            <button class="btn subject-btn Biologie">Biologie</button>
-            <button class="btn subject-btn Geschichte">Geschichte</button>
-            <button class="btn subject-btn Erdkunde">Erdkunde</button>
-            <button class="btn subject-btn Ethik">Ethik</button>
-            <button class="btn subject-btn Kunst">Kunst</button>
-            <button class="btn subject-btn Musik">Musik</button>
-            <button class="btn subject-btn Informatik">Informatik</button>
+        <div id="subject-grid" class="item-grid">
+             <!-- Buttons werden dynamisch per JS erstellt -->
+             <p class="text-muted text-center" style="grid-column: 1 / -1;">Lade Fächer...</p>
         </div>
     </div>
 
@@ -307,13 +349,13 @@
         <h3>Frage:</h3>
         <div id="question-editor" class="editable-area" contenteditable="true"
              placeholder="Frage eingeben (Text oder Bild per Copy & Paste)"></div>
-        <button class="btn btn-success upload-btn" onclick="document.getElementById('question-upload').click()"><i class="fas fa-image"></i> Bild hochladen</button>
+        <button class="btn btn-success upload-btn" onclick="document.getElementById('question-upload').click()">Bild hochladen</button>
         <input type="file" id="question-upload" class="hidden" accept="image/*">
 
         <h3>Antwort:</h3>
         <div id="answer-editor" class="editable-area" contenteditable="true"
              placeholder="Antwort eingeben (Text oder Bild per Copy & Paste oder Upload)"></div>
-        <button class="btn btn-success upload-btn" onclick="document.getElementById('answer-upload').click()"><i class="fas fa-image"></i> Bild hochladen</button>
+        <button class="btn btn-success upload-btn" onclick="document.getElementById('answer-upload').click()">Bild hochladen</button>
         <input type="file" id="answer-upload" class="hidden" accept="image/*">
 
         <div class="controls">
@@ -326,7 +368,7 @@
     <div id="edit-grade-selection" class="hidden container-box">
         <h2>Bearbeiten: Wähle eine Klassenstufe</h2>
         <div id="edit-grades-list" class="item-grid">
-            <p class="text-muted text-center">Keine Einträge für dieses Fach gefunden.</p>
+            <p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Einträge für dieses Fach gefunden.</p>
         </div>
         <div class="controls">
             <button id="btn-back-to-actions-from-edit-grade" class="btn btn-secondary">Zurück</button>
@@ -337,7 +379,7 @@
     <div id="edit-chapter-selection" class="hidden container-box">
         <h2 id="edit-chapter-selection-title">Bearbeiten: Wähle ein Kapitel</h2>
         <div id="edit-chapters-list" class="item-grid">
-            <p class="text-muted text-center">Keine Kapitel für diese Klassenstufe gefunden.</p>
+            <p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel für diese Klassenstufe gefunden.</p>
         </div>
         <div class="controls">
             <button id="btn-back-to-edit-grades" class="btn btn-secondary">Zurück zur Klassenstufe</button>
@@ -347,7 +389,8 @@
      <!-- 6. Bearbeiten/Löschen - Fragen Auswahl -->
     <div id="edit-question-selection" class="hidden container-box">
         <h2 id="edit-question-selection-title">Bearbeiten: Wähle eine Frage</h2>
-        <div id="edit-questions-list" class="item-grid"> <!-- Using item-grid for consistency -->
+        <!-- Fragenliste braucht kein Grid, eher eine Liste -->
+        <div id="edit-questions-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
             <p class="text-muted text-center">Keine Fragen in diesem Kapitel gefunden.</p>
         </div>
         <div class="controls">
@@ -364,13 +407,13 @@
         <h3>Frage:</h3>
         <div id="edit-question-editor" class="editable-area" contenteditable="true"
              placeholder="Frage bearbeiten"></div>
-        <button class="btn btn-success upload-btn" onclick="document.getElementById('edit-question-upload').click()"><i class="fas fa-image"></i> Bild hochladen</button>
+        <button class="btn btn-success upload-btn" onclick="document.getElementById('edit-question-upload').click()">Bild hochladen</button>
         <input type="file" id="edit-question-upload" class="hidden" accept="image/*">
 
         <h3>Antwort:</h3>
         <div id="edit-answer-editor" class="editable-area" contenteditable="true"
              placeholder="Antwort bearbeiten"></div>
-        <button class="btn btn-success upload-btn" onclick="document.getElementById('edit-answer-upload').click()"><i class="fas fa-image"></i> Bild hochladen</button>
+        <button class="btn btn-success upload-btn" onclick="document.getElementById('edit-answer-upload').click()">Bild hochladen</button>
         <input type="file" id="edit-answer-upload" class="hidden" accept="image/*">
 
         <div class="controls">
@@ -387,7 +430,7 @@
     <div id="quiz-grade-selection" class="hidden container-box">
         <h2>Abfragen: Wähle eine Klassenstufe</h2>
         <div id="quiz-grades-list" class="item-grid">
-            <p class="text-muted text-center">Keine Einträge für dieses Fach gefunden.</p>
+            <p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Einträge für dieses Fach gefunden.</p>
         </div>
         <div class="controls">
             <button id="btn-back-to-actions-from-quiz-grade" class="btn btn-secondary">Zurück</button>
@@ -398,7 +441,7 @@
     <div id="quiz-chapter-selection" class="hidden container-box">
         <h2 id="quiz-chapter-selection-title">Abfragen: Wähle ein Kapitel</h2>
         <div id="quiz-chapters-list" class="item-grid">
-             <p class="text-muted text-center">Keine Kapitel für diese Klassenstufe gefunden.</p>
+             <p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel für diese Klassenstufe gefunden.</p>
         </div>
         <div class="controls">
             <button id="btn-back-to-quiz-grades" class="btn btn-secondary">Zurück zur Klassenstufe</button>
@@ -417,7 +460,7 @@
             </div>
         </div>
 
-        <div id="quiz-answer-area" class="quiz-card-area hidden">
+        <div id="quiz-answer-area" class="quiz-card-area hidden"> <!-- ID hinzugefügt -->
              <h3>Antwort:</h3>
              <div id="quiz-answer" class="quiz-content">
                  <!-- Antwort wird hier angezeigt -->
@@ -433,34 +476,32 @@
             <button id="btn-known" class="btn btn-success hidden">Gewusst 👍</button>
             <button id="btn-unknown" class="btn btn-warning hidden">Nicht gewusst 👎</button>
             <button id="btn-quit-quiz" class="btn btn-danger">Abbrechen & Zurück zur Fächerwahl</button>
-             <button id="btn-back-to-subjects-after-quiz" class="btn btn-secondary hidden">Zurück zur Fächerwahl</button>
+            <button id="btn-back-to-subjects-after-quiz" class="btn btn-secondary hidden">Zurück zur Fächerwahl</button>
         </div>
     </div>
 
 
     <script>
         // === Globale Variablen ===
-        let memoBoxData = JSON.parse(localStorage.getItem('memoBoxData')) || {};
+        let memoBoxData = {}; // Startet leer, wird vom Server geladen
         let currentSubject = '';
-
-        // Eintragen-Modus
         let lastGrade = '';
         let lastChapter = '';
-
-        // Bearbeiten-Modus
         let selectedEditGrade = '';
         let selectedEditChapter = '';
-        let currentEditingCard = null; // Hält das Objekt der Karte, die bearbeitet wird {id: ..., questionHTML: ..., answerHTML: ...}
-        let originalCardLocation = { grade: '', chapter: '' }; // Um die Karte nach Änderung ggf. zu verschieben
-
-        // Quiz-Modus
+        let currentEditingCard = null;
+        let originalCardLocation = { grade: '', chapter: '' };
         let quizStack = [];
         let selectedQuizGrade = '';
         let selectedQuizChapter = '';
         let initialCardCount = 0;
+        let isLoadingData = false;
+        let isSavingData = false; // Verhindert paralleles Speichern
+
+        // Backend API Endpoint (relativer Pfad auf Netlify)
+        const API_ENDPOINT = '/.netlify/functions/data';
 
         // === Hilfsfunktionen ===
-
         function showSection(sectionId) {
             const sections = [
                 'subject-selection', 'action-selection', 'add-card',
@@ -475,19 +516,19 @@
             const activeSection = document.getElementById(sectionId);
             if (activeSection) {
                 activeSection.classList.remove('hidden');
-                window.scrollTo(0, 0); // Nach oben scrollen beim Sektionswechsel
+                window.scrollTo(0, 0);
             } else {
                 console.error("Sektion nicht gefunden:", sectionId);
             }
         }
 
-        // --- Bild Handling (aus Originalcode, leicht angepasst) ---
+        // --- Bild Handling ---
          function insertImage(editorId, imageSrc) {
             const editor = document.getElementById(editorId);
-            if (!editor) return;
+            if (!editor || !editor.isContentEditable) return;
             const selection = window.getSelection();
 
-            if (!selection || selection.rangeCount === 0 || !editor.contains(selection.focusNode) || !editor.isContentEditable) {
+            if (!selection || selection.rangeCount === 0 || !editor.contains(selection.focusNode)) {
                  editor.focus();
                  const endRange = document.createRange();
                  endRange.selectNodeContents(editor);
@@ -499,34 +540,31 @@
 
             const container = document.createElement('div');
             container.className = 'image-container';
-            container.contentEditable = 'false'; // Wichtig!
+            container.contentEditable = 'false';
 
             const img = document.createElement('img');
             img.src = imageSrc;
             img.className = 'image-preview';
 
             const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-image btn'; // btn Klasse für Styling
+            removeBtn.className = 'remove-image btn';
             removeBtn.innerHTML = '×';
             removeBtn.contentEditable = 'false';
             removeBtn.onclick = function(event) {
-                 event.stopPropagation(); // Verhindert ggf. andere Klick-Events
+                 event.stopPropagation();
                  container.remove();
-                 editor.focus(); // Fokus zurückgeben
+                 editor.focus();
             };
 
             container.appendChild(img);
             container.appendChild(removeBtn);
-
             range.insertNode(container);
 
-             // Cursor nach dem Bild setzen
-            const space = document.createTextNode('\u00A0'); // Non-breaking space
+            const space = document.createTextNode('\u00A0');
             range.setStartAfter(container);
             range.insertNode(space);
-            range.setStartAfter(space); // Range nach dem Leerzeichen setzen
+            range.setStartAfter(space);
             range.collapse(true);
-
             selection.removeAllRanges();
             selection.addRange(range);
             editor.focus();
@@ -551,32 +589,25 @@
              const editor = document.getElementById(editorId);
              if (!editor) return;
              editor.addEventListener('paste', function(e) {
-                 // Nur ausführen, wenn der Editor fokussiert und editierbar ist
                 if (document.activeElement !== editor || !editor.isContentEditable) return;
-
                 e.preventDefault();
                 const items = (e.clipboardData || window.clipboardData).items;
                 let foundImage = false;
-
                 for (let i = 0; i < items.length; i++) {
                     if (items[i].type.indexOf('image') !== -1) {
                         const blob = items[i].getAsFile();
                          if (blob) {
                             const reader = new FileReader();
-                            reader.onload = function(event) {
-                                insertImage(editorId, event.target.result);
-                            };
+                            reader.onload = function(event) { insertImage(editorId, event.target.result); };
                             reader.readAsDataURL(blob);
                             foundImage = true;
-                            break; // Nur ein Bild pro Paste einfügen
+                            break;
                         }
                     }
                 }
                  if (!foundImage) {
                     const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-                    if (text) {
-                         document.execCommand('insertText', false, text);
-                    }
+                    if (text) { document.execCommand('insertText', false, text); }
                  }
             });
         }
@@ -584,41 +615,32 @@
         function getEditorContentHTML(editorId) {
             const editor = document.getElementById(editorId);
             if (!editor) return '';
-            const tempDiv = editor.cloneNode(true); // Klonen, um Original nicht zu ändern
+            const tempDiv = editor.cloneNode(true);
             tempDiv.querySelectorAll('.remove-image').forEach(btn => btn.remove());
-            // Leere Image-Container entfernen (falls Bild gelöscht wurde)
             tempDiv.querySelectorAll('.image-container:not(:has(img))').forEach(cont => cont.remove());
-            return tempDiv.innerHTML.trim(); // Whitespace am Ende entfernen
+            return tempDiv.innerHTML.trim();
         }
 
         function displayHTMLContent(elementId, htmlContent) {
             const element = document.getElementById(elementId);
             if (!element) return;
-            element.innerHTML = htmlContent || ''; // Fallback auf leeren String
+            element.innerHTML = htmlContent || '';
 
-            // Sicherstellen, dass Bilder korrekt angezeigt werden und keine Löschbuttons haben
             element.querySelectorAll('.image-container').forEach(container => {
                 container.contentEditable = 'false';
                 const removeBtn = container.querySelector('.remove-image');
                 if(removeBtn) removeBtn.remove();
             });
-            element.querySelectorAll('img').forEach(img => {
-                 // Klassen hinzufügen, falls sie fehlen
-                img.classList.add('image-preview');
-            });
-             // Für Editoren: Bild-Löschbuttons wieder hinzufügen, falls nötig
+            element.querySelectorAll('img').forEach(img => { img.classList.add('image-preview'); });
+
              if (element.isContentEditable) {
                  element.querySelectorAll('.image-container').forEach(container => {
-                     if (!container.querySelector('.remove-image')) { // Nur hinzufügen, wenn nicht vorhanden
+                     if (!container.querySelector('.remove-image')) {
                          const removeBtn = document.createElement('button');
                          removeBtn.className = 'remove-image btn';
                          removeBtn.innerHTML = '×';
                          removeBtn.contentEditable = 'false';
-                         removeBtn.onclick = function(event) {
-                             event.stopPropagation();
-                             container.remove();
-                             element.focus();
-                         };
+                         removeBtn.onclick = function(event) { event.stopPropagation(); container.remove(); element.focus(); };
                          container.appendChild(removeBtn);
                      }
                  });
@@ -631,30 +653,168 @@
             return tempDiv.textContent || tempDiv.innerText || "";
         }
 
-        function saveMemoBoxData() {
-            localStorage.setItem('memoBoxData', JSON.stringify(memoBoxData));
+        // --- Backend Kommunikation ---
+        async function saveMemoBoxDataToServer() {
+            console.log("Attempting to save data to server..."); // Debug Log
+            if (isSavingData) {
+                 console.warn("Save already in progress.");
+                 showFeedback("Speichervorgang läuft bereits...", "info");
+                 return false;
+            }
+             isSavingData = true;
+             setButtonsDisabled(true); // Buttons deaktivieren
+             showLoadingIndicator(true, "Speichere Daten...");
+
+             // Passwortabfrage implementiert!
+             const password = prompt("Bitte Lehrer-Passwort eingeben zum Speichern:");
+             if (password === null) { // Benutzer hat Abbrechen geklickt
+                 console.log("Save cancelled by user.");
+                 isSavingData = false;
+                 setButtonsDisabled(false);
+                 showLoadingIndicator(false);
+                 return false; // Abbruch signalisieren
+             }
+             // Prüfung auf leeres Passwort entfernt - Backend prüft korrekt
+            // if (!password) {
+            //     alert("Passwort erforderlich zum Speichern!");
+            //     isSavingData = false;
+            //      setButtonsDisabled(false);
+            //      showLoadingIndicator(false);
+            //     return false;
+            // }
+
+            try {
+                console.log("Sending fetch POST request to:", API_ENDPOINT); // Debug Log
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', },
+                    body: JSON.stringify({
+                        password: password, // Passwort wird mitgesendet
+                        data: memoBoxData
+                    }),
+                });
+
+                 const responseBody = await response.text(); // Erstmal Text lesen für Debugging
+                 console.log("Server Response Status:", response.status);
+                 console.log("Server Response Body:", responseBody);
+
+
+                 if (!response.ok) {
+                     let errorData = {};
+                     try { errorData = JSON.parse(responseBody); } catch (e) { /* Ignoriere JSON Parse Fehler */ }
+
+                     let errorMsg = `Fehler ${response.status}: ${response.statusText}`;
+                     if (response.status === 401 || response.status === 403) {
+                         errorMsg = "Passwort ungültig oder fehlt!";
+                     } else if (errorData.error) {
+                         errorMsg = `Fehler: ${errorData.error}`;
+                     } else if (responseBody) {
+                         errorMsg = `Serverfehler: ${responseBody}`; // Zeige rohen Text wenn kein JSON
+                     }
+                     throw new Error(errorMsg);
+                 }
+
+                // Erfolg
+                 console.log("Data successfully saved on server.");
+                 showFeedback("Daten gespeichert!", "success");
+                 isSavingData = false;
+                 setButtonsDisabled(false);
+                 showLoadingIndicator(false);
+                 return true;
+
+            } catch (error) {
+                 console.error('Fehler beim Speichern der Daten:', error);
+                 showFeedback(`Speichern fehlgeschlagen: ${error.message}`, "error");
+                 isSavingData = false;
+                 setButtonsDisabled(false);
+                 showLoadingIndicator(false);
+                 return false;
+            }
         }
 
-        // --- Datenbereinigungsfunktion ---
+        async function loadMemoBoxDataFromServer() {
+             if (isLoadingData) return;
+             isLoadingData = true;
+             setButtonsDisabled(true); // Auch beim Laden Buttons deaktivieren
+             showLoadingIndicator(true, "Lade Daten...");
+             console.log("Loading data from server..."); // Debug Log
+
+             try {
+                 const response = await fetch(API_ENDPOINT); // GET
+                  console.log("Load response status:", response.status); // Debug Log
+                 if (!response.ok) {
+                      const errorText = await response.text();
+                      console.error("Load response error text:", errorText);
+                      throw new Error(`Fehler ${response.status}: ${response.statusText}`);
+                 }
+                 const data = await response.json();
+                 memoBoxData = data || {};
+                 console.log("Data successfully loaded from server.");
+                 // UI muss nach dem Laden aktualisiert werden
+                 displaySubjectButtons(); // Fächerliste neu aufbauen
+                 showSection('subject-selection'); // Starte immer bei der Fächerwahl
+
+             } catch (error) {
+                 console.error('Fehler beim Laden der Daten:', error);
+                 showFeedback(`Laden der Daten fehlgeschlagen: ${error.message}.`, "error");
+                 memoBoxData = {}; // Sicherstellen, dass Daten leer sind
+                 displaySubjectButtons(); // Auch bei Fehler Buttons anzeigen (leer)
+                 showSection('subject-selection');
+             } finally {
+                  isLoadingData = false;
+                  setButtonsDisabled(false); // Buttons wieder aktivieren
+                  showLoadingIndicator(false);
+             }
+        }
+
+        // --- UI Hilfsfunktionen ---
+        function showLoadingIndicator(show, message = "Lädt...") {
+            const indicator = document.getElementById('loading-indicator');
+            if (!indicator) return;
+            if (show) {
+                indicator.textContent = message;
+                indicator.classList.add('visible');
+            } else {
+                indicator.classList.remove('visible');
+            }
+        }
+
+        function showFeedback(message, type = "info") {
+            const feedback = document.getElementById('feedback-message');
+            if (!feedback) return;
+            feedback.textContent = message;
+            feedback.style.backgroundColor = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff';
+            feedback.classList.add('visible');
+            setTimeout(() => { feedback.classList.remove('visible'); }, 3000);
+        }
+
+         // Funktion zum Deaktivieren/Aktivieren relevanter Buttons
+        function setButtonsDisabled(disabled) {
+             const buttons = document.querySelectorAll('button.btn'); // Alle relevanten Buttons
+             buttons.forEach(button => {
+                 button.disabled = disabled;
+             });
+             // ContentEditable Bereiche auch steuern
+             const editors = document.querySelectorAll('.editable-area');
+             editors.forEach(editor => {
+                editor.contentEditable = !disabled;
+                editor.style.opacity = disabled ? 0.7 : 1;
+             });
+        }
+
         function cleanupEmptyStructures(subject, grade, chapter) {
             let dataChanged = false;
-            // Prüfen ob Kapitel leer ist
             if (memoBoxData[subject]?.[grade]?.[chapter]?.length === 0) {
                 delete memoBoxData[subject][grade][chapter];
                 dataChanged = true;
-                // Prüfen ob Klassenstufe jetzt leer ist
                 if (Object.keys(memoBoxData[subject][grade]).length === 0) {
                     delete memoBoxData[subject][grade];
-                    // Prüfen ob Fach jetzt leer ist (optional, meist nicht gewünscht)
-                    // if (Object.keys(memoBoxData[subject]).length === 0) {
-                    //     delete memoBoxData[subject];
-                    // }
                 }
             }
-             if(dataChanged) saveMemoBoxData();
+             // Hinweis: 'saveMemoBoxDataToServer' muss danach explizit aufgerufen werden!
+             return dataChanged;
         }
 
-        // Fisher-Yates Shuffle Algorithmus
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -663,78 +823,50 @@
             return array;
         }
 
-        // === Event Listener Setup ===
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // --- Navigation & Grund-Setup ---
-            // Editoren Setup (Add)
+        // --- Event Listener Setup ---
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Editoren Setup
             setupImageUpload('question-upload', 'question-editor');
             setupImageUpload('answer-upload', 'answer-editor');
             setupPasteHandler('question-editor');
             setupPasteHandler('answer-editor');
-             // Editoren Setup (Edit) - Wichtig!
             setupImageUpload('edit-question-upload', 'edit-question-editor');
             setupImageUpload('edit-answer-upload', 'edit-answer-editor');
             setupPasteHandler('edit-question-editor');
             setupPasteHandler('edit-answer-editor');
 
-
-            // Fächer-Auswahl
-            document.querySelectorAll('.subject-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    currentSubject = this.textContent.trim(); // Trimmen für Sicherheit
-                     // Klassen für spezifische Farben hinzufügen
-                     this.classList.add(currentSubject.replace(/\s+/g, '')); // Leerzeichen entfernen für Klassennamen
-
-                    document.getElementById('current-subject').textContent = `Fach: ${currentSubject}`;
-                    // Alle relevanten Zustände zurücksetzen
-                    lastGrade = '';
-                    lastChapter = '';
-                    selectedEditGrade = '';
-                    selectedEditChapter = '';
-                    currentEditingCard = null;
-                    selectedQuizGrade = '';
-                    selectedQuizChapter = '';
-                    quizStack = [];
-                    showSection('action-selection');
-                });
-            });
+            // Daten initial laden
+            await loadMemoBoxDataFromServer(); // Warten bis Daten da sind
 
             // Zurück zur Fächerwahl (von Aktionsauswahl)
-            document.getElementById('btn-back-to-subjects').addEventListener('click', function() {
-                showSection('subject-selection');
-            });
+            document.getElementById('btn-back-to-subjects').addEventListener('click', () => showSection('subject-selection'));
 
             // --- Eintragen Sektion ---
             document.getElementById('btn-add').addEventListener('click', function() {
                 document.getElementById('grade').value = lastGrade;
                 document.getElementById('chapter').value = lastChapter;
-                // Editoren *nicht* leeren, falls man nur kurz ausgestiegen ist
+                // Wichtig: Editoren leeren für neue Karte!
+                document.getElementById('question-editor').innerHTML = '';
+                document.getElementById('answer-editor').innerHTML = '';
                 showSection('add-card');
                 document.getElementById('grade').focus();
             });
 
-            document.getElementById('btn-save').addEventListener('click', function() {
+            document.getElementById('btn-save').addEventListener('click', async function() { // Async machen!
                 const grade = document.getElementById('grade').value.trim();
                 const chapter = document.getElementById('chapter').value.trim();
                 const questionHTML = getEditorContentHTML('question-editor');
                 const answerHTML = getEditorContentHTML('answer-editor');
 
-                if (!grade || !chapter) {
-                    alert('Bitte Klassenstufe und Kapitel eingeben!');
-                    return;
-                }
+                if (!grade || !chapter) { alert('Bitte Klassenstufe und Kapitel eingeben!'); return; }
                 const questionIsEmpty = !getPlainTextFromHTML(questionHTML) && !questionHTML.includes('<img');
                 const answerIsEmpty = !getPlainTextFromHTML(answerHTML) && !answerHTML.includes('<img');
-
-                if (questionIsEmpty || answerIsEmpty) {
-                    alert('Bitte Frage und Antwort eingeben (Text oder Bild)!');
-                    return;
-                }
+                if (questionIsEmpty || answerIsEmpty) { alert('Bitte Frage und Antwort eingeben (Text oder Bild)!'); return; }
 
                 lastGrade = grade;
                 lastChapter = chapter;
 
+                // Lokale Datenstruktur vorbereiten/aktualisieren
                 if (!memoBoxData[currentSubject]) memoBoxData[currentSubject] = {};
                 if (!memoBoxData[currentSubject][grade]) memoBoxData[currentSubject][grade] = {};
                 if (!memoBoxData[currentSubject][grade][chapter]) memoBoxData[currentSubject][grade][chapter] = [];
@@ -742,62 +874,43 @@
                 memoBoxData[currentSubject][grade][chapter].push({
                     questionHTML: questionHTML,
                     answerHTML: answerHTML,
-                    id: Date.now() + '-' + Math.random().toString(36).substr(2, 9) // Eindeutige ID
+                    id: Date.now() + '-' + Math.random().toString(36).substr(2, 9)
                 });
 
-                saveMemoBoxData();
+                // An Server senden (enthält Passwortabfrage)
+                const savedToServer = await saveMemoBoxDataToServer();
 
-                // Felder für nächste Eingabe zurücksetzen
-                document.getElementById('question-editor').innerHTML = '';
-                document.getElementById('answer-editor').innerHTML = '';
-
-                // KEIN ALERT MEHR: alert('Karte gespeichert!');
-                document.getElementById('question-editor').focus();
+                if (savedToServer) {
+                    // Nur bei Erfolg Felder zurücksetzen
+                    document.getElementById('question-editor').innerHTML = '';
+                    document.getElementById('answer-editor').innerHTML = '';
+                    document.getElementById('question-editor').focus();
+                } else {
+                    // Fehler beim Speichern - Lokale Änderung rückgängig machen!
+                    memoBoxData[currentSubject][grade][chapter].pop(); // Letzte hinzugefügte Karte entfernen
+                    cleanupEmptyStructures(currentSubject, grade, chapter); // Ggf. leere Strukturen entfernen
+                    // Alert ist jetzt in saveMemoBoxDataToServer enthalten
+                }
             });
 
-            document.getElementById('btn-exit-add').addEventListener('click', function() {
-                showSection('action-selection');
-            });
+            document.getElementById('btn-exit-add').addEventListener('click', () => showSection('action-selection'));
 
             // --- Bearbeiten / Löschen Sektion ---
-
-            // 1. "Bearbeiten" Button -> Klassenstufen anzeigen
             document.getElementById('btn-edit').addEventListener('click', function() {
                 if (!currentSubject || !memoBoxData[currentSubject] || Object.keys(memoBoxData[currentSubject]).length === 0) {
-                    alert(`Keine Einträge für das Fach "${currentSubject}" vorhanden. Bitte zuerst Karten eintragen.`);
+                    showFeedback(`Keine Einträge für "${currentSubject}" vorhanden.`, "info");
                     return;
                 }
                 displayEditGradeSelection();
                 showSection('edit-grade-selection');
             });
 
-            // 2. Zurück von Edit-Klassenstufe zu Aktionen
-            document.getElementById('btn-back-to-actions-from-edit-grade').addEventListener('click', function() {
-                showSection('action-selection');
-            });
+            document.getElementById('btn-back-to-actions-from-edit-grade').addEventListener('click', () => showSection('action-selection'));
+            document.getElementById('btn-back-to-edit-grades').addEventListener('click', () => { displayEditGradeSelection(); showSection('edit-grade-selection'); });
+            document.getElementById('btn-back-to-edit-chapters').addEventListener('click', () => { displayEditChapterSelection(selectedEditGrade); showSection('edit-chapter-selection'); });
+            document.getElementById('btn-cancel-edit').addEventListener('click', () => { displayEditQuestionSelection(selectedEditGrade, selectedEditChapter); showSection('edit-question-selection'); currentEditingCard = null; });
 
-            // 3. Zurück von Edit-Kapitel zu Edit-Klassenstufe
-            document.getElementById('btn-back-to-edit-grades').addEventListener('click', function() {
-                 displayEditGradeSelection(); // Neu laden, falls was gelöscht wurde
-                 showSection('edit-grade-selection');
-            });
-
-            // 4. Zurück von Edit-Fragen zu Edit-Kapitel
-            document.getElementById('btn-back-to-edit-chapters').addEventListener('click', function() {
-                 displayEditChapterSelection(selectedEditGrade); // Neu laden
-                 showSection('edit-chapter-selection');
-            });
-
-            // 5. Zurück/Abbrechen vom Edit-Formular zur Fragenübersicht
-            document.getElementById('btn-cancel-edit').addEventListener('click', function() {
-                 // Daten nicht speichern, einfach zurück zur Auswahl
-                 displayEditQuestionSelection(selectedEditGrade, selectedEditChapter); // Neu laden
-                 showSection('edit-question-selection');
-                 currentEditingCard = null; // Bearbeitung abbrechen
-            });
-
-            // 6. Änderungen speichern
-            document.getElementById('btn-save-changes').addEventListener('click', function() {
+            document.getElementById('btn-save-changes').addEventListener('click', async function() { // Async machen!
                 if (!currentEditingCard) return;
 
                 const newGrade = document.getElementById('edit-grade').value.trim();
@@ -805,253 +918,232 @@
                 const newQuestionHTML = getEditorContentHTML('edit-question-editor');
                 const newAnswerHTML = getEditorContentHTML('edit-answer-editor');
 
-                if (!newGrade || !newChapter) {
-                    alert('Klassenstufe und Kapitel dürfen nicht leer sein!');
-                    return;
-                }
-                 const questionIsEmpty = !getPlainTextFromHTML(newQuestionHTML) && !newQuestionHTML.includes('<img');
-                 const answerIsEmpty = !getPlainTextFromHTML(newAnswerHTML) && !newAnswerHTML.includes('<img');
-                 if (questionIsEmpty || answerIsEmpty) {
-                     alert('Frage und Antwort dürfen nicht leer sein!');
-                     return;
-                 }
-
+                if (!newGrade || !newChapter) { alert('Klassenstufe und Kapitel dürfen nicht leer sein!'); return; }
+                const questionIsEmpty = !getPlainTextFromHTML(newQuestionHTML) && !newQuestionHTML.includes('<img');
+                const answerIsEmpty = !getPlainTextFromHTML(newAnswerHTML) && !newAnswerHTML.includes('<img');
+                if (questionIsEmpty || answerIsEmpty) { alert('Frage und Antwort dürfen nicht leer sein!'); return; }
 
                 const originalGrade = originalCardLocation.grade;
                 const originalChapter = originalCardLocation.chapter;
                 const cardId = currentEditingCard.id;
 
-                // Karte im Datensatz finden und aktualisieren/verschieben
-                let cardFound = false;
-                if (memoBoxData[currentSubject]?.[originalGrade]?.[originalChapter]) {
-                    const chapterArray = memoBoxData[currentSubject][originalGrade][originalChapter];
+                // Kopie der alten Daten für evtl. Rollback
+                const oldMemoBoxData = JSON.parse(JSON.stringify(memoBoxData));
+
+                // Lokale Änderung durchführen
+                let cardFoundAndUpdatedLocally = false;
+                 try {
+                    const chapterArray = memoBoxData[currentSubject]?.[originalGrade]?.[originalChapter];
+                    if (!chapterArray) throw new Error("Original chapter array not found");
                     const cardIndex = chapterArray.findIndex(card => card.id === cardId);
+                    if (cardIndex === -1) throw new Error("Original card not found in chapter array");
 
-                    if (cardIndex > -1) {
-                        // Karte gefunden
-                        const updatedCard = {
-                            ...chapterArray[cardIndex], // Behalte ID und andere ggf. vorhandene Felder
-                            questionHTML: newQuestionHTML,
-                            answerHTML: newAnswerHTML
-                        };
+                    const updatedCard = { ...chapterArray[cardIndex], questionHTML: newQuestionHTML, answerHTML: newAnswerHTML };
 
-                        if (newGrade === originalGrade && newChapter === originalChapter) {
-                            // Einfaches Update an Ort und Stelle
-                            chapterArray[cardIndex] = updatedCard;
-                        } else {
-                            // Verschieben: Aus altem Ort entfernen
-                            chapterArray.splice(cardIndex, 1);
-                            cleanupEmptyStructures(currentSubject, originalGrade, originalChapter); // Alten Ort ggf. aufräumen
-
-                            // Neuen Ort sicherstellen und Karte hinzufügen
-                            if (!memoBoxData[currentSubject][newGrade]) memoBoxData[currentSubject][newGrade] = {};
-                            if (!memoBoxData[currentSubject][newGrade][newChapter]) memoBoxData[currentSubject][newGrade][newChapter] = [];
-                            memoBoxData[currentSubject][newGrade][newChapter].push(updatedCard);
-                        }
-                        cardFound = true;
+                    if (newGrade === originalGrade && newChapter === originalChapter) {
+                        chapterArray[cardIndex] = updatedCard;
+                    } else {
+                        chapterArray.splice(cardIndex, 1);
+                        const cleanedOld = cleanupEmptyStructures(currentSubject, originalGrade, originalChapter);
+                        if (!memoBoxData[currentSubject][newGrade]) memoBoxData[currentSubject][newGrade] = {};
+                        if (!memoBoxData[currentSubject][newGrade][newChapter]) memoBoxData[currentSubject][newGrade][newChapter] = [];
+                        memoBoxData[currentSubject][newGrade][newChapter].push(updatedCard);
                     }
-                }
+                     cardFoundAndUpdatedLocally = true;
+                 } catch (error) {
+                     console.error("Error updating card locally:", error);
+                     alert("Fehler beim lokalen Aktualisieren der Karte.");
+                     memoBoxData = oldMemoBoxData; // Rollback
+                     return;
+                 }
 
-                if (cardFound) {
-                    saveMemoBoxData();
-                    alert('Änderungen gespeichert!');
-                    currentEditingCard = null;
-                    showSection('action-selection'); // Zurück zur Aktionsauswahl
-                } else {
-                    alert('Fehler: Originalkarte konnte nicht gefunden werden. Änderungen nicht gespeichert.');
-                }
-            });
 
-            // 7. Karte löschen
-            document.getElementById('btn-delete-card').addEventListener('click', function() {
-                if (!currentEditingCard) return;
-
-                if (confirm('Möchtest du diese Lernkarte wirklich unwiderruflich löschen?')) {
-                    const originalGrade = originalCardLocation.grade;
-                    const originalChapter = originalCardLocation.chapter;
-                    const cardId = currentEditingCard.id;
-                    let cardDeleted = false;
-
-                    if (memoBoxData[currentSubject]?.[originalGrade]?.[originalChapter]) {
-                        const chapterArray = memoBoxData[currentSubject][originalGrade][originalChapter];
-                        const cardIndex = chapterArray.findIndex(card => card.id === cardId);
-
-                        if (cardIndex > -1) {
-                            chapterArray.splice(cardIndex, 1); // Karte entfernen
-                            cardDeleted = true;
-                            cleanupEmptyStructures(currentSubject, originalGrade, originalChapter); // Aufräumen
-                        }
-                    }
-
-                    if (cardDeleted) {
-                         saveMemoBoxData();
-                         alert('Karte gelöscht!');
+                 if (cardFoundAndUpdatedLocally) {
+                     // An Server senden (enthält Passwortabfrage)
+                     const savedToServer = await saveMemoBoxDataToServer();
+                     if (savedToServer) {
                          currentEditingCard = null;
                          showSection('action-selection'); // Zurück zur Aktionsauswahl
                      } else {
-                         alert('Fehler: Karte konnte nicht gefunden oder gelöscht werden.');
+                          // Fehler beim Speichern - Lokale Änderung rückgängig machen!
+                          console.warn("Server save failed, rolling back local changes.");
+                          memoBoxData = oldMemoBoxData;
+                          // Alert ist jetzt in saveMemoBoxDataToServer enthalten
                      }
-                }
+                 }
             });
 
+            document.getElementById('btn-delete-card').addEventListener('click', async function() { // Async machen!
+                if (!currentEditingCard || !confirm('Möchtest du diese Lernkarte wirklich unwiderruflich löschen?')) return;
+
+                const originalGrade = originalCardLocation.grade;
+                const originalChapter = originalCardLocation.chapter;
+                const cardId = currentEditingCard.id;
+
+                 // Kopie der alten Daten für evtl. Rollback
+                const oldMemoBoxData = JSON.parse(JSON.stringify(memoBoxData));
+
+                // Lokales Löschen durchführen
+                let cardDeletedLocally = false;
+                 try {
+                    const chapterArray = memoBoxData[currentSubject]?.[originalGrade]?.[originalChapter];
+                     if (!chapterArray) throw new Error("Original chapter array not found");
+                    const cardIndex = chapterArray.findIndex(card => card.id === cardId);
+                    if (cardIndex === -1) throw new Error("Card not found for deletion");
+
+                    chapterArray.splice(cardIndex, 1);
+                    cleanupEmptyStructures(currentSubject, originalGrade, originalChapter);
+                    cardDeletedLocally = true;
+                 } catch(error) {
+                    console.error("Error deleting card locally:", error);
+                    alert("Fehler beim lokalen Löschen der Karte.");
+                    memoBoxData = oldMemoBoxData; // Rollback
+                    return;
+                 }
+
+
+                  if (cardDeletedLocally) {
+                      // An Server senden (enthält Passwortabfrage)
+                      const savedToServer = await saveMemoBoxDataToServer();
+                      if (savedToServer) {
+                         currentEditingCard = null;
+                         showSection('action-selection'); // Zurück zur Aktionsauswahl
+                      } else {
+                           // Fehler beim Speichern - Lokale Änderung rückgängig machen!
+                           console.warn("Server save failed after delete, rolling back local changes.");
+                           memoBoxData = oldMemoBoxData;
+                           // Alert ist jetzt in saveMemoBoxDataToServer enthalten
+                      }
+                  }
+             });
 
             // --- Abfragen Sektion ---
-
             document.getElementById('btn-quiz').addEventListener('click', function() {
                 if (!currentSubject || !memoBoxData[currentSubject] || Object.keys(memoBoxData[currentSubject]).length === 0) {
-                    alert(`Keine Einträge für das Fach "${currentSubject}" vorhanden.`);
+                    showFeedback(`Keine Einträge für "${currentSubject}" vorhanden.`, "info");
                     return;
                 }
                 displayQuizGradeSelection();
                 showSection('quiz-grade-selection');
             });
 
-            document.getElementById('btn-back-to-actions-from-quiz-grade').addEventListener('click', function() {
-                showSection('action-selection');
-            });
-
-             document.getElementById('btn-back-to-quiz-grades').addEventListener('click', function() {
-                 displayQuizGradeSelection();
-                 showSection('quiz-grade-selection');
-            });
-
-            document.getElementById('btn-quit-quiz').addEventListener('click', function() {
-                 if (confirm('Möchtest du die aktuelle Abfrage wirklich abbrechen?')) {
-                     quizStack = [];
-                     showSection('subject-selection');
-                 }
-            });
-
-            document.getElementById('btn-back-to-subjects-after-quiz').addEventListener('click', function() {
-                 showSection('subject-selection');
-             });
+            document.getElementById('btn-back-to-actions-from-quiz-grade').addEventListener('click', () => showSection('action-selection'));
+            document.getElementById('btn-back-to-quiz-grades').addEventListener('click', () => { displayQuizGradeSelection(); showSection('quiz-grade-selection'); });
+            document.getElementById('btn-quit-quiz').addEventListener('click', () => { if (confirm('Möchtest du die aktuelle Abfrage wirklich abbrechen?')) { quizStack = []; showSection('subject-selection'); } });
+            document.getElementById('btn-back-to-subjects-after-quiz').addEventListener('click', () => showSection('subject-selection'));
 
             document.getElementById('btn-show-answer').addEventListener('click', function() {
                 if (quizStack.length > 0) {
                      const currentCard = quizStack[0];
+                     const answerArea = document.getElementById('quiz-answer-area'); // Element holen
                      displayHTMLContent('quiz-answer', currentCard.answerHTML);
-                     document.getElementById('quiz-answer-area').classList.remove('hidden');
+                     answerArea.classList.remove('hidden'); // Sichtbar machen
                      document.getElementById('btn-show-answer').classList.add('hidden');
                      document.getElementById('btn-known').classList.remove('hidden');
                      document.getElementById('btn-unknown').classList.remove('hidden');
+                     // NEU: Auto-Scroll zur Antwort
+                     answerArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
             });
 
-            document.getElementById('btn-known').addEventListener('click', function() {
-                 if (quizStack.length > 0) {
-                     quizStack.shift();
-                     processNextQuizCard();
-                 }
-            });
-
-            document.getElementById('btn-unknown').addEventListener('click', function() {
-                 if (quizStack.length > 0) {
-                     const currentCard = quizStack.shift();
-                     quizStack.push(currentCard);
-                     processNextQuizCard();
-                 }
-            });
+            document.getElementById('btn-known').addEventListener('click', function() { if (quizStack.length > 0) { quizStack.shift(); processNextQuizCard(); } });
+            document.getElementById('btn-unknown').addEventListener('click', function() { if (quizStack.length > 0) { const card = quizStack.shift(); quizStack.push(card); processNextQuizCard(); } });
 
         }); // Ende DOMContentLoaded
 
-        // === Funktionen für Bearbeiten/Löschen ===
+        // === Fächerbuttons dynamisch erstellen ===
+        function displaySubjectButtons() {
+           const grid = document.getElementById('subject-grid'); // ID hinzugefügt zum Grid-Container
+           if (!grid) return;
+           grid.innerHTML = ''; // Leeren
+           const subjects = ["Deutsch", "Mathematik", "Englisch", "Physik", "Chemie", "Biologie", "Geschichte", "Erdkunde", "Ethik", "Kunst", "Musik", "Informatik"];
 
+           subjects.forEach(subjectName => {
+               const button = document.createElement('button');
+               // Ersetze Leerzeichen und Umlaute für sicherere Klassennamen
+               const className = subjectName.replace(/\s+/g, '').replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+               button.className = `btn subject-btn ${className}`;
+               button.textContent = subjectName;
+               button.addEventListener('click', function() {
+                   currentSubject = this.textContent.trim();
+                   document.getElementById('current-subject').textContent = `Fach: ${currentSubject}`;
+                   showSection('action-selection');
+               });
+               grid.appendChild(button);
+           });
+           // Farben über CSS-Klassen steuern (siehe CSS oben)
+        }
+
+        // === Funktionen für Bearbeiten/Löschen ===
         function displayEditGradeSelection() {
             const gradeList = document.getElementById('edit-grades-list');
-            gradeList.innerHTML = ''; // Liste leeren
+            gradeList.innerHTML = '';
             const subjectData = memoBoxData[currentSubject];
+            const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Klassenstufen für dieses Fach gefunden.</p>';
 
-            if (!subjectData || Object.keys(subjectData).length === 0) {
-                gradeList.innerHTML = '<p class="text-muted text-center">Keine Klassenstufen für dieses Fach gefunden.</p>';
-                return;
-            }
-
-            const grades = Object.keys(subjectData).sort();
+            if (!subjectData || Object.keys(subjectData).length === 0) { gradeList.innerHTML = placeholder; return; }
+            const grades = Object.keys(subjectData).sort((a,b) => a.localeCompare(b, undefined, {numeric: true})); // Numerisch sortieren
             grades.forEach(grade => {
-                 // Nur anzeigen, wenn die Stufe auch Kapitel enthält
                  if (Object.keys(subjectData[grade]).length > 0) {
                      const button = document.createElement('button');
                      button.textContent = grade;
-                     button.className = 'btn list-item-btn'; // Verwende btn Klasse
-                     button.onclick = () => {
-                         selectedEditGrade = grade;
-                         displayEditChapterSelection(grade);
-                         showSection('edit-chapter-selection');
-                     };
-                     gradeList.appendChild(button); // Direkte Buttons, kein li mehr
+                     button.className = 'btn list-item-btn';
+                     button.onclick = () => { selectedEditGrade = grade; displayEditChapterSelection(grade); showSection('edit-chapter-selection'); };
+                     gradeList.appendChild(button);
                  }
             });
-            if (gradeList.children.length === 0) {
-                 gradeList.innerHTML = '<p class="text-muted text-center">Keine Klassenstufen mit Inhalt gefunden.</p>';
-            }
+            if (gradeList.children.length === 0) { gradeList.innerHTML = placeholder; }
         }
 
         function displayEditChapterSelection(grade) {
             const chapterList = document.getElementById('edit-chapters-list');
             const title = document.getElementById('edit-chapter-selection-title');
-            chapterList.innerHTML = ''; // Liste leeren
+            chapterList.innerHTML = '';
             title.textContent = `Bearbeiten (${grade}): Wähle ein Kapitel`;
             const gradeData = memoBoxData[currentSubject]?.[grade];
+             const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel für diese Klassenstufe gefunden.</p>';
 
-            if (!gradeData || Object.keys(gradeData).length === 0) {
-                chapterList.innerHTML = '<p class="text-muted text-center">Keine Kapitel für diese Klassenstufe gefunden.</p>';
-                return;
-            }
-
+            if (!gradeData || Object.keys(gradeData).length === 0) { chapterList.innerHTML = placeholder; return; }
             const chapters = Object.keys(gradeData).sort();
             chapters.forEach(chapter => {
-                 // Nur anzeigen, wenn Karten im Kapitel sind
                  if (gradeData[chapter] && gradeData[chapter].length > 0) {
                      const button = document.createElement('button');
-                     button.textContent = `${chapter} (${gradeData[chapter].length} Karten)`; // Anzahl Karten anzeigen
+                     button.textContent = `${chapter} (${gradeData[chapter].length} Karten)`;
                      button.className = 'btn list-item-btn';
-                     button.onclick = () => {
-                         selectedEditChapter = chapter;
-                         displayEditQuestionSelection(grade, chapter);
-                         showSection('edit-question-selection');
-                     };
+                     button.onclick = () => { selectedEditChapter = chapter; displayEditQuestionSelection(grade, chapter); showSection('edit-question-selection'); };
                      chapterList.appendChild(button);
                  }
             });
-            if (chapterList.children.length === 0) {
-                chapterList.innerHTML = '<p class="text-muted text-center">Keine Kapitel mit Karten in dieser Klassenstufe gefunden.</p>';
-            }
+            if (chapterList.children.length === 0) { chapterList.innerHTML = placeholder; }
         }
 
          function displayEditQuestionSelection(grade, chapter) {
             const questionList = document.getElementById('edit-questions-list');
             const title = document.getElementById('edit-question-selection-title');
-            questionList.innerHTML = ''; // Liste leeren
+            questionList.innerHTML = '';
             title.textContent = `Bearbeiten (${grade} - ${chapter}): Wähle eine Frage`;
             const cards = memoBoxData[currentSubject]?.[grade]?.[chapter];
+            const placeholder = '<p class="text-muted text-center">Keine Fragen in diesem Kapitel gefunden.</p>';
 
-            if (!cards || cards.length === 0) {
-                questionList.innerHTML = '<p class="text-muted text-center">Keine Fragen in diesem Kapitel gefunden.</p>';
-                return;
-            }
+            if (!cards || cards.length === 0) { questionList.innerHTML = placeholder; return; }
+
+            // Karten sortieren (z.B. nach Erstellung oder Frage-Text) - Optional
+             cards.sort((a, b) => (getPlainTextFromHTML(a.questionHTML) || '').localeCompare(getPlainTextFromHTML(b.questionHTML) || ''));
+
 
             cards.forEach(card => {
                 const button = document.createElement('button');
-                 // Vorschau generieren
-                 let previewText = getPlainTextFromHTML(card.questionHTML).substring(0, 80); // Max 80 Zeichen Text
-                 if (card.questionHTML.includes('<img')) {
-                     previewText = "[Bild] " + previewText; // Hinweis auf Bild
-                 }
-                 if (previewText.length >= 80) previewText += "...";
-                 button.textContent = previewText || "[Leere Frage]"; // Fallback
-                 button.title = getPlainTextFromHTML(card.questionHTML); // Voller Text als Tooltip
-                 button.className = 'btn question-preview-btn'; // Spezielle Klasse für Vorschau
-                 button.dataset.cardId = card.id; // ID speichern
-
-                 button.onclick = () => {
-                     loadCardForEditing(grade, chapter, card.id);
-                 };
-                 questionList.appendChild(button);
+                let previewText = getPlainTextFromHTML(card.questionHTML).substring(0, 100); // Max 100 Zeichen
+                if (card.questionHTML.includes('<img')) { previewText = "[Bild] " + previewText; }
+                if (previewText.length >= 100) previewText += "...";
+                button.textContent = previewText || "[Leere Frage]";
+                button.title = getPlainTextFromHTML(card.questionHTML);
+                button.className = 'btn question-preview-btn';
+                button.dataset.cardId = card.id;
+                button.onclick = () => { loadCardForEditing(grade, chapter, card.id); };
+                questionList.appendChild(button);
             });
-
-             if (questionList.children.length === 0) { // Sollte nicht passieren, wenn cards Array > 0 ist
-                 questionList.innerHTML = '<p class="text-muted text-center">Fehler beim Laden der Fragen.</p>';
-             }
+             if (questionList.children.length === 0) { questionList.innerHTML = placeholder; }
         }
 
         function loadCardForEditing(grade, chapter, cardId) {
@@ -1059,53 +1151,39 @@
             const cardToEdit = cards?.find(card => card.id === cardId);
 
             if (cardToEdit) {
-                currentEditingCard = cardToEdit; // Das Objekt speichern
-                originalCardLocation = { grade: grade, chapter: chapter }; // Originalort merken
-
-                // Formularfelder füllen
+                currentEditingCard = { ...cardToEdit }; // Kopie erstellen
+                originalCardLocation = { grade: grade, chapter: chapter };
                 document.getElementById('edit-grade').value = grade;
                 document.getElementById('edit-chapter').value = chapter;
                 displayHTMLContent('edit-question-editor', cardToEdit.questionHTML);
                 displayHTMLContent('edit-answer-editor', cardToEdit.answerHTML);
-
                 showSection('edit-card');
             } else {
-                alert('Fehler: Die ausgewählte Karte konnte nicht geladen werden.');
-                // Zurück zur Übersicht
-                 displayEditQuestionSelection(grade, chapter);
-                 showSection('edit-question-selection');
+                showFeedback('Fehler: Die ausgewählte Karte konnte nicht geladen werden.', "error");
+                displayEditQuestionSelection(grade, chapter);
+                showSection('edit-question-selection');
             }
         }
 
-
         // === Funktionen für Abfragen ===
-
         function displayQuizGradeSelection() {
             const gradeList = document.getElementById('quiz-grades-list');
             gradeList.innerHTML = '';
             const subjectData = memoBoxData[currentSubject];
+            const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Klassenstufen für dieses Fach gefunden.</p>';
 
-            if (!subjectData || Object.keys(subjectData).length === 0) {
-                gradeList.innerHTML = '<p class="text-muted text-center">Keine Klassenstufen für dieses Fach gefunden.</p>';
-                return;
-            }
-            const grades = Object.keys(subjectData).sort();
+            if (!subjectData || Object.keys(subjectData).length === 0) { gradeList.innerHTML = placeholder; return; }
+            const grades = Object.keys(subjectData).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
             grades.forEach(grade => {
-                 if (Object.keys(subjectData[grade]).length > 0) { // Nur wenn Kapitel existieren
+                 if (Object.keys(subjectData[grade]).length > 0 && Object.values(subjectData[grade]).some(chap => chap.length > 0)) { // Prüfen ob Karten existieren
                      const button = document.createElement('button');
                      button.textContent = grade;
                      button.className = 'btn list-item-btn';
-                     button.onclick = () => {
-                         selectedQuizGrade = grade;
-                         displayQuizChapterSelection(grade);
-                         showSection('quiz-chapter-selection');
-                     };
+                     button.onclick = () => { selectedQuizGrade = grade; displayQuizChapterSelection(grade); showSection('quiz-chapter-selection'); };
                      gradeList.appendChild(button);
                  }
             });
-             if (gradeList.children.length === 0) {
-                 gradeList.innerHTML = '<p class="text-muted text-center">Keine Klassenstufen mit Inhalt gefunden.</p>';
-            }
+             if (gradeList.children.length === 0) { gradeList.innerHTML = placeholder; }
         }
 
         function displayQuizChapterSelection(grade) {
@@ -1114,51 +1192,39 @@
             chapterList.innerHTML = '';
             title.textContent = `Abfragen (${grade}): Wähle ein Kapitel`;
             const gradeData = memoBoxData[currentSubject]?.[grade];
+             const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel mit Karten für diese Klassenstufe gefunden.</p>';
 
-            if (!gradeData || Object.keys(gradeData).length === 0) {
-                chapterList.innerHTML = '<p class="text-muted text-center">Keine Kapitel für diese Klassenstufe gefunden.</p>';
-                return;
-            }
+            if (!gradeData || Object.keys(gradeData).length === 0) { chapterList.innerHTML = placeholder; return; }
             const chapters = Object.keys(gradeData).sort();
             chapters.forEach(chapter => {
                  if (gradeData[chapter] && gradeData[chapter].length > 0) {
                      const button = document.createElement('button');
                      button.textContent = `${chapter} (${gradeData[chapter].length} Karten)`;
                      button.className = 'btn list-item-btn';
-                     button.onclick = () => {
-                         selectedQuizChapter = chapter;
-                         startQuiz();
-                     };
+                     button.onclick = () => { selectedQuizChapter = chapter; startQuiz(); };
                      chapterList.appendChild(button);
                  }
             });
-            if (chapterList.children.length === 0) {
-                 chapterList.innerHTML = '<p class="text-muted text-center">Keine Kapitel mit Karten gefunden.</p>';
-            }
+            if (chapterList.children.length === 0) { chapterList.innerHTML = placeholder; }
         }
 
         function startQuiz() {
              const cards = memoBoxData[currentSubject]?.[selectedQuizGrade]?.[selectedQuizChapter];
              if (!cards || cards.length === 0) {
-                 alert("Keine Karten in diesem Kapitel zum Abfragen vorhanden.");
-                 displayQuizChapterSelection(selectedQuizGrade); // Zurück zur Auswahl
+                 showFeedback("Keine Karten in diesem Kapitel zum Abfragen vorhanden.", "info");
+                 displayQuizChapterSelection(selectedQuizGrade);
                  showSection('quiz-chapter-selection');
                  return;
              }
-
-            quizStack = shuffleArray([...cards]); // Wichtig: Kopie erstellen!
+            quizStack = shuffleArray([...cards]);
             initialCardCount = quizStack.length;
-
-             // Quiz UI zurücksetzen
-             document.getElementById('quiz-completion-message').classList.add('hidden');
-             document.getElementById('btn-back-to-subjects-after-quiz').classList.add('hidden');
-             document.getElementById('btn-quit-quiz').classList.remove('hidden');
-             document.getElementById('btn-show-answer').classList.remove('hidden');
-             document.getElementById('btn-known').classList.add('hidden');
-             document.getElementById('btn-unknown').classList.add('hidden');
-             document.getElementById('quiz-answer-area').classList.add('hidden');
-
-
+            document.getElementById('quiz-completion-message').classList.add('hidden');
+            document.getElementById('btn-back-to-subjects-after-quiz').classList.add('hidden');
+            document.getElementById('btn-quit-quiz').classList.remove('hidden');
+            document.getElementById('btn-show-answer').classList.remove('hidden');
+            document.getElementById('btn-known').classList.add('hidden');
+            document.getElementById('btn-unknown').classList.add('hidden');
+            document.getElementById('quiz-answer-area').classList.add('hidden');
             showSection('quiz-interface');
             processNextQuizCard();
         }
@@ -1175,34 +1241,26 @@
             const backBtn = document.getElementById('btn-back-to-subjects-after-quiz');
             const completionMsg = document.getElementById('quiz-completion-message');
 
-
             if (quizStack.length === 0) {
-                // Quiz beendet
                 questionElement.innerHTML = '';
                 answerArea.classList.add('hidden');
                 progressElement.textContent = `Alle ${initialCardCount} Karten gelernt!`;
                 completionMsg.classList.remove('hidden');
-
                 showAnswerBtn.classList.add('hidden');
                 knownBtn.classList.add('hidden');
                 unknownBtn.classList.add('hidden');
                 quitBtn.classList.add('hidden');
                 backBtn.classList.remove('hidden');
-
             } else {
-                // Nächste Karte
                 const currentCard = quizStack[0];
                 const remainingCards = quizStack.length;
-                const totalCards = initialCardCount; // Korrekte Gesamtzahl
+                const totalCards = initialCardCount;
                 const currentCardNumber = totalCards - remainingCards + 1;
                 progressElement.textContent = `Karte ${currentCardNumber} von ${totalCards} (noch ${remainingCards} zu lernen)`;
-
                 displayHTMLContent('quiz-question', currentCard.questionHTML);
                 answerArea.classList.add('hidden');
                 answerElement.innerHTML = '';
                 completionMsg.classList.add('hidden');
-
-                 // Buttons zurücksetzen/anzeigen
                  showAnswerBtn.classList.remove('hidden');
                  knownBtn.classList.add('hidden');
                  unknownBtn.classList.add('hidden');
@@ -1212,9 +1270,5 @@
         }
 
     </script>
-
-    <!-- Optional: FontAwesome für Icons in Buttons (wenn gewünscht) -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script> -->
-
 </body>
 </html>
