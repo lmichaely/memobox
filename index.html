@@ -652,7 +652,24 @@
             return tempDiv.textContent || tempDiv.innerText || "";
         }
 
-        function shuffleArray(array) { /* ... unverändert ... */ }
+     //   function shuffleArray(array) { /* ... unverändert ... */ }
+        function shuffleArray(array) {
+    // Kopie erstellen, um Original nicht zu ändern (wird jetzt schon vorher gemacht)
+    // let currentIndex = array.length, randomIndex; // Alte Variante
+    let currentIndex = array.length; // Neu, da Kopie schon existiert
+
+    // While there remain elements to shuffle.
+    while (currentIndex > 0) {
+         // Pick a remaining element.
+         let randomIndex = Math.floor(Math.random() * currentIndex);
+         currentIndex--;
+
+         // And swap it with the current element.
+         [array[currentIndex], array[randomIndex]] = [
+             array[randomIndex], array[currentIndex]];
+    }
+    return array; // Gib das gemischte Array zurück
+ }
          function cleanupEmptyStructures(subject, grade, chapter) { /* ... unverändert ... */ }
 
 
@@ -1214,8 +1231,12 @@
      // Robuste Prüfung, ob die verschachtelten Daten existieren
      const gradeData = memoBoxData[currentSubject]?.[selectedQuizGrade];
      const cards = gradeData?.[selectedQuizChapter]; // cards ist jetzt das Array oder undefined
+     // Kopie erstellen und mischen
+     quizStack = shuffleArray([...cards]); // <-- Hier passiert der Fehler
+     initialCardCount = quizStack.length;
 
-     // Jetzt die Prüfung auf cards und cards.length
+    // ... (Rest der Funktion) ..
+     // Jetzt die Prüfun g auf cards und cards.length
      // WICHTIG: Prüfe zuerst auf cards selbst, bevor du .length liest!
      if (!cards || !Array.isArray(cards) || cards.length === 0) { // Zusätzliche Prüfung auf Array
          showFeedback("Keine Karten in diesem Kapitel zum Abfragen vorhanden oder Datenfehler.", "info");
