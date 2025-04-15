@@ -1204,25 +1204,89 @@
               if (chapterList.children.length === 0) { chapterList.innerHTML = placeholder; }
           }
           function startQuiz() {
-               const cards = memoBoxData[currentSubject]?.[selectedQuizGrade]?.[selectedQuizChapter];
-               if (!cards || cards.length === 0) {
-                   showFeedback("Keine Karten zum Abfragen vorhanden.", "info");
-                   displayQuizChapterSelection(selectedQuizGrade);
-                   showSection('quiz-chapter-selection');
-                   return;
-               }
-              quizStack = shuffleArray([...cards]);
-              initialCardCount = quizStack.length;
-              document.getElementById('quiz-completion-message').classList.add('hidden');
-              document.getElementById('btn-back-to-subjects-after-quiz').classList.add('hidden');
-              document.getElementById('btn-quit-quiz').classList.remove('hidden');
-              document.getElementById('btn-show-answer').classList.remove('hidden');
-              document.getElementById('btn-known').classList.add('hidden');
-              document.getElementById('btn-unknown').classList.add('hidden');
-              document.getElementById('quiz-answer-area').classList.add('hidden');
-              showSection('quiz-interface');
-              processNextQuizCard();
-          }
+     // Logge die Werte, die wir verwenden wollen
+     console.log("Attempting to start quiz with:");
+     console.log("  currentSubject:", currentSubject);
+     console.log("  selectedQuizGrade:", selectedQuizGrade);
+     console.log("  selectedQuizChapter:", selectedQuizChapter);
+     console.log("  memoBoxData structure for subject:", memoBoxData[currentSubject]); // Zeige die Daten für das Fach
+
+     // Robuste Prüfung, ob die verschachtelten Daten existieren
+     const gradeData = memoBoxData[currentSubject]?.[selectedQuizGrade];
+     const cards = gradeData?.[selectedQuizChapter]; // cards ist jetzt das Array oder undefined
+
+     // Jetzt die Prüfung auf cards und cards.length
+     // WICHTIG: Prüfe zuerst auf cards selbst, bevor du .length liest!
+     if (!cards || !Array.isArray(cards) || cards.length === 0) { // Zusätzliche Prüfung auf Array
+         showFeedback("Keine Karten in diesem Kapitel zum Abfragen vorhanden oder Datenfehler.", "info");
+         console.error("No cards found or data structure issue. Aborting quiz start. cards:", cards); // Detaillierterer Log
+         // Zurück zur Kapitelauswahl springen
+         if (selectedQuizGrade) { // Nur wenn eine Note ausgewählt war
+              displayQuizChapterSelection(selectedQuizGrade);
+              showSection('quiz-chapter-selection');
+         } else {
+              showSection('action-selection'); // Fallback
+         }
+         return;
+     }
+
+     // --- Ab hier sollte 'cards' ein gültiges, nicht-leeres Array sein ---
+
+     // Kopie erstellen und mischen
+     quizStack = shuffleArray([...cards]);
+     initialCardCount = quizStack.length;
+
+     // UI zurücksetzen etc.
+     document.getElementById('quiz-completion-message').classList.add('hidden');
+     // ... (Rest der UI-Reset-Logik) ...
+
+     console.log("Quiz initialized with", initialCardCount, "cards. Showing interface.");
+     showSection('quiz-interface');
+     processNextQuizCard();
+}
+function startQuiz() {
+     // Logge die Werte, die wir verwenden wollen
+     console.log("Attempting to start quiz with:");
+     console.log("  currentSubject:", currentSubject);
+     console.log("  selectedQuizGrade:", selectedQuizGrade);
+     console.log("  selectedQuizChapter:", selectedQuizChapter);
+     console.log("  memoBoxData structure for subject:", memoBoxData[currentSubject]); // Zeige die Daten für das Fach
+
+     // Robuste Prüfung, ob die verschachtelten Daten existieren
+     const gradeData = memoBoxData[currentSubject]?.[selectedQuizGrade];
+     const cards = gradeData?.[selectedQuizChapter]; // cards ist jetzt das Array oder undefined
+
+     // Jetzt die Prüfung auf cards und cards.length
+     // WICHTIG: Prüfe zuerst auf cards selbst, bevor du .length liest!
+     if (!cards || !Array.isArray(cards) || cards.length === 0) { // Zusätzliche Prüfung auf Array
+         showFeedback("Keine Karten in diesem Kapitel zum Abfragen vorhanden oder Datenfehler.", "info");
+         console.error("No cards found or data structure issue. Aborting quiz start. cards:", cards); // Detaillierterer Log
+         // Zurück zur Kapitelauswahl springen
+         if (selectedQuizGrade) { // Nur wenn eine Note ausgewählt war
+              displayQuizChapterSelection(selectedQuizGrade);
+              showSection('quiz-chapter-selection');
+         } else {
+              showSection('action-selection'); // Fallback
+         }
+         return;
+     }
+
+     // --- Ab hier sollte 'cards' ein gültiges, nicht-leeres Array sein ---
+
+     // Kopie erstellen und mischen
+     quizStack = shuffleArray([...cards]);
+     initialCardCount = quizStack.length;
+
+     // UI zurücksetzen etc.
+     document.getElementById('quiz-completion-message').classList.add('hidden');
+     // ... (Rest der UI-Reset-Logik) ...
+
+     console.log("Quiz initialized with", initialCardCount, "cards. Showing interface.");
+     showSection('quiz-interface');
+     processNextQuizCard();
+}
+
+
           function processNextQuizCard() {
               const progressElement = document.getElementById('quiz-progress');
               const questionElement = document.getElementById('quiz-question');
