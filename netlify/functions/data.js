@@ -1,12 +1,56 @@
 // netlify/functions/data.js
-
-// Benötigtes Paket für Supabase
 const { createClient } = require('@supabase/supabase-js');
 
-// --- Konfiguration ---
-// Supabase URL und Anon Key (WERDEN ALS UMGEBUNGSVARIABLEN GESETZT!)
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD; // Auch gleich mitloggen
+
+// --- Logge die Variablen direkt nach dem Laden ---
+console.log("--- Environment Variables ---");
+console.log("SUPABASE_URL:", SUPABASE_URL ? 'SET (length: ' + SUPABASE_URL.length + ')' : 'NOT SET or EMPTY');
+console.log("SUPABASE_ANON_KEY:", SUPABASE_ANON_KEY ? 'SET (length: ' + SUPABASE_ANON_KEY.length + ')' : 'NOT SET or EMPTY');
+console.log("TEACHER_PASSWORD:", TEACHER_PASSWORD ? 'SET' : 'NOT SET or EMPTY');
+console.log("---------------------------");
+
+const TABLE_NAME = 'memobox_storage';
+const DATA_OBJECT_KEY = 'main_memobox_data_v1';
+
+let supabase = null;
+if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    try {
+         supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+         console.log("Supabase client potentially initialized.");
+    } catch (error) {
+        console.error("Error during createClient:", error);
+        // Fehler hier schon loggen, falls createClient selbst fehlschlägt
+    }
+} else {
+    console.error("FATAL: Supabase URL or Anon Key environment variable is missing!");
+}
+
+exports.handler = async (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+    const headers = { /* ... CORS headers ... */ };
+
+    if (event.httpMethod === 'OPTIONS') { /* ... OPTIONS handling ... */ }
+
+     // Prüfe erneut, da Initialisierung fehlschlagen könnte
+    if (!supabase) {
+        console.error("Handler check: Supabase client is not initialized.");
+        return { /* ... Fehler 500 zurückgeben ... */ };
+    }
+
+    // Rest des Handlers (GET/POST) ...
+    if (event.httpMethod === 'GET') {
+       // ... (GET Logik)
+    }
+    if (event.httpMethod === 'POST') {
+        // ... (POST Logik)
+    }
+
+    return { /* ... 405 Fehler ... */ };
+}; // Ende von exports.handler
+
 
 // Name der Tabelle in Supabase
 const TABLE_NAME = 'memobox_storage';
