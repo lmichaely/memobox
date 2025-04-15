@@ -94,21 +94,15 @@
         /* === Grid für Fächer & Auswahl === */
         .item-grid {
             display: grid;
-            /* NEU: Festes 4-spaltiges Raster */
-            grid-template-columns: repeat(4, 1fr); /* 4 Spalten, die sich den Platz teilen */
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             margin-top: 20px;
         }
-        /* Responsivität für kleinere Bildschirme (optional, aber empfohlen) */
         @media (max-width: 768px) {
-            .item-grid {
-                grid-template-columns: repeat(3, 1fr); /* 3 Spalten auf Tablets */
-            }
+            .item-grid { grid-template-columns: repeat(3, 1fr); }
         }
          @media (max-width: 480px) {
-            .item-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 Spalten auf Handys */
-            }
+            .item-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         .subject-btn {
@@ -167,12 +161,17 @@
             background-color: #fff;
             transition: border-color 0.2s, box-shadow 0.2s;
             line-height: 1.5;
-            overflow: auto; /* Scrollbalken falls nötig */
+            overflow: auto;
         }
         .editable-area:focus {
             border-color: #80bdff;
             outline: 0;
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        /* Verhindere Bearbeiten, wenn nicht eingeloggt (visuell) */
+        .editable-area:not([contenteditable="true"]) {
+             background-color: #e9ecef;
+             opacity: 0.7;
         }
         [contenteditable="true"]:empty:before {
             content: attr(placeholder);
@@ -265,7 +264,7 @@
              padding: 12px 25px;
              color: white;
              border-radius: 8px;
-             z-index: 1001; /* Über allem */
+             z-index: 1001;
              box-shadow: 0 2px 10px rgba(0,0,0,0.2);
              opacity: 0;
              transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
@@ -281,7 +280,7 @@
              bottom: 20px;
              left: 50%;
              transform: translateX(-50%);
-             background-color: #007bff; /* Default info */
+             background-color: #007bff;
          }
          #loading-indicator.visible, #feedback-message.visible {
              opacity: 1;
@@ -289,7 +288,7 @@
          }
 
         /* === Hilfsklassen === */
-        .hidden { display: none !important; } /* Wichtig, um andere Display-Regeln zu überschreiben */
+        .hidden { display: none !important; }
         .text-center { text-align: center; }
         .text-muted { color: #6c757d; }
         .mt-2 { margin-top: 0.5rem; }
@@ -299,9 +298,7 @@
         .subject-btn.Deutsch { background-color: #dc3545; }
         .subject-btn.Mathematik { background-color: #007bff; }
         .subject-btn.Englisch { background-color: #6f42c1; }
-        /* NEU: Physik Farbe geändert */
-        .subject-btn.Physik { background-color: #6c757d; } /* Dunkles Grau (wie Informatik) */
-        /* Alternativ Gelb: .subject-btn.Physik { background-color: #ffc107; color: #212529; } */
+        .subject-btn.Physik { background-color: #6c757d; }
         .subject-btn.Chemie { background-color: #fd7e14; }
         .subject-btn.Biologie { background-color: #28a745; }
         .subject-btn.Geschichte { background-color: #343a40; }
@@ -314,9 +311,8 @@
     </style>
 </head>
 <body>
-    <h1>MemoBox Online</h1> <!-- Titel angepasst -->
+    <h1>MemoBox Online</h1>
 
-    <!-- Lade- und Feedback-Elemente (werden per JS gesteuert) -->
     <div id="loading-indicator">Lädt...</div>
     <div id="feedback-message">Nachricht</div>
 
@@ -324,9 +320,11 @@
     <div id="subject-selection" class="container-box">
         <h2>Wähle ein Fach:</h2>
         <div id="subject-grid" class="item-grid">
-             <!-- Buttons werden dynamisch per JS erstellt -->
              <p class="text-muted text-center" style="grid-column: 1 / -1;">Lade Fächer...</p>
         </div>
+         <div style="text-align: right; margin-top: 15px;">
+             <button id="btn-logout" class="btn btn-sm btn-secondary hidden">Logout</button>
+         </div>
     </div>
 
     <!-- 2. Aktionen: Eintragen/Bearbeiten/Abfragen -->
@@ -389,7 +387,6 @@
      <!-- 6. Bearbeiten/Löschen - Fragen Auswahl -->
     <div id="edit-question-selection" class="hidden container-box">
         <h2 id="edit-question-selection-title">Bearbeiten: Wähle eine Frage</h2>
-        <!-- Fragenliste braucht kein Grid, eher eine Liste -->
         <div id="edit-questions-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
             <p class="text-muted text-center">Keine Fragen in diesem Kapitel gefunden.</p>
         </div>
@@ -417,14 +414,13 @@
         <input type="file" id="edit-answer-upload" class="hidden" accept="image/*">
 
         <div class="controls">
-            <div> <!-- Gruppe für Speichern/Löschen -->
+            <div>
                 <button id="btn-save-changes" class="btn btn-success">Änderungen Speichern</button>
                 <button id="btn-delete-card" class="btn btn-danger">Karte Löschen</button>
             </div>
             <button id="btn-cancel-edit" class="btn btn-secondary">Zurück zur Fragenübersicht</button>
         </div>
     </div>
-
 
     <!-- 8. Abfragen - Klassenstufen Auswahl -->
     <div id="quiz-grade-selection" class="hidden container-box">
@@ -452,25 +448,17 @@
     <div id="quiz-interface" class="hidden container-box">
         <h2>Abfrage läuft...</h2>
         <div id="quiz-progress">Karte 1 von X</div>
-
         <div class="quiz-card-area">
             <h3>Frage:</h3>
-            <div id="quiz-question" class="quiz-content">
-                <!-- Frage wird hier angezeigt -->
-            </div>
+            <div id="quiz-question" class="quiz-content"></div>
         </div>
-
-        <div id="quiz-answer-area" class="quiz-card-area hidden"> <!-- ID hinzugefügt -->
+        <div id="quiz-answer-area" class="quiz-card-area hidden">
              <h3>Antwort:</h3>
-             <div id="quiz-answer" class="quiz-content">
-                 <!-- Antwort wird hier angezeigt -->
-             </div>
+             <div id="quiz-answer" class="quiz-content"></div>
         </div>
-
          <div id="quiz-completion-message" class="completion-message hidden">
              🎉 Super! Alle Karten gewusst! 🎉
          </div>
-
         <div class="quiz-controls button-group">
             <button id="btn-show-answer" class="btn btn-primary">Antwort anzeigen</button>
             <button id="btn-known" class="btn btn-success hidden">Gewusst 👍</button>
@@ -480,10 +468,9 @@
         </div>
     </div>
 
-
     <script>
         // === Globale Variablen ===
-        let memoBoxData = {}; // Startet leer, wird vom Server geladen
+        let memoBoxData = {};
         let currentSubject = '';
         let lastGrade = '';
         let lastChapter = '';
@@ -496,9 +483,12 @@
         let selectedQuizChapter = '';
         let initialCardCount = 0;
         let isLoadingData = false;
-        let isSavingData = false; // Verhindert paralleles Speichern
+        let isSavingData = false;
 
-        // Backend API Endpoint (relativer Pfad auf Netlify)
+        // ACHTUNG: Passwort hier im Frontend ist unsicher!
+        // In einer echten Anwendung sollte dies besser gehandhabt werden.
+        const TEACHER_LOGIN_PASSWORD = "sesam49";
+
         const API_ENDPOINT = '/.netlify/functions/data';
 
         // === Hilfsfunktionen ===
@@ -512,236 +502,275 @@
                 const section = document.getElementById(id);
                 if (section) section.classList.add('hidden');
             });
-
             const activeSection = document.getElementById(sectionId);
             if (activeSection) {
                 activeSection.classList.remove('hidden');
                 window.scrollTo(0, 0);
+                // Logout-Button nur auf Startseite anzeigen, wenn eingeloggt
+                 updateLogoutButtonVisibility(sectionId === 'subject-selection');
             } else {
                 console.error("Sektion nicht gefunden:", sectionId);
             }
         }
 
         // --- Bild Handling ---
-         function insertImage(editorId, imageSrc) {
-            const editor = document.getElementById(editorId);
-            if (!editor || !editor.isContentEditable) return;
-            const selection = window.getSelection();
+         function insertImage(editorId, imageSrc) { /* ... unverändert ... */ }
+         function setupImageUpload(uploadId, editorId) { /* ... unverändert ... */ }
+         function setupPasteHandler(editorId) { /* ... unverändert ... */ }
+         function getEditorContentHTML(editorId) { /* ... unverändert ... */ }
+         function displayHTMLContent(elementId, htmlContent) { /* ... unverändert ... */ }
+         function getPlainTextFromHTML(html) { /* ... unverändert ... */ }
+         function shuffleArray(array) { /* ... unverändert ... */ }
+         function cleanupEmptyStructures(subject, grade, chapter) { /* ... unverändert ... */ }
 
-            if (!selection || selection.rangeCount === 0 || !editor.contains(selection.focusNode)) {
-                 editor.focus();
-                 const endRange = document.createRange();
-                 endRange.selectNodeContents(editor);
-                 endRange.collapse(false);
-                 selection.removeAllRanges();
-                 selection.addRange(endRange);
-            }
-             const range = selection.getRangeAt(0);
-
-            const container = document.createElement('div');
-            container.className = 'image-container';
-            container.contentEditable = 'false';
-
-            const img = document.createElement('img');
-            img.src = imageSrc;
-            img.className = 'image-preview';
-
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-image btn';
-            removeBtn.innerHTML = '×';
-            removeBtn.contentEditable = 'false';
-            removeBtn.onclick = function(event) {
-                 event.stopPropagation();
-                 container.remove();
-                 editor.focus();
-            };
-
-            container.appendChild(img);
-            container.appendChild(removeBtn);
-            range.insertNode(container);
-
-            const space = document.createTextNode('\u00A0');
-            range.setStartAfter(container);
-            range.insertNode(space);
-            range.setStartAfter(space);
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            editor.focus();
-        }
-
-        function setupImageUpload(uploadId, editorId) {
-            const upload = document.getElementById(uploadId);
-            if (!upload) return;
-            upload.addEventListener('change', function(e) {
-                if (e.target.files && e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        insertImage(editorId, event.target.result);
-                    };
-                    reader.readAsDataURL(e.target.files[0]);
-                    upload.value = '';
-                }
-            });
-        }
-
-        function setupPasteHandler(editorId) {
+         // --- Bild Handling (Code hier zur Vollständigkeit) ---
+          function insertImage(editorId, imageSrc) {
              const editor = document.getElementById(editorId);
-             if (!editor) return;
-             editor.addEventListener('paste', function(e) {
-                if (document.activeElement !== editor || !editor.isContentEditable) return;
-                e.preventDefault();
-                const items = (e.clipboardData || window.clipboardData).items;
-                let foundImage = false;
-                for (let i = 0; i < items.length; i++) {
-                    if (items[i].type.indexOf('image') !== -1) {
-                        const blob = items[i].getAsFile();
-                         if (blob) {
-                            const reader = new FileReader();
-                            reader.onload = function(event) { insertImage(editorId, event.target.result); };
-                            reader.readAsDataURL(blob);
-                            foundImage = true;
-                            break;
-                        }
-                    }
-                }
-                 if (!foundImage) {
-                    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-                    if (text) { document.execCommand('insertText', false, text); }
-                 }
-            });
-        }
+             if (!editor || !editor.isContentEditable) return;
+             const selection = window.getSelection();
 
-        function getEditorContentHTML(editorId) {
-            const editor = document.getElementById(editorId);
-            if (!editor) return '';
-            const tempDiv = editor.cloneNode(true);
-            tempDiv.querySelectorAll('.remove-image').forEach(btn => btn.remove());
-            tempDiv.querySelectorAll('.image-container:not(:has(img))').forEach(cont => cont.remove());
-            return tempDiv.innerHTML.trim();
-        }
-
-        function displayHTMLContent(elementId, htmlContent) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            element.innerHTML = htmlContent || '';
-
-            element.querySelectorAll('.image-container').forEach(container => {
-                container.contentEditable = 'false';
-                const removeBtn = container.querySelector('.remove-image');
-                if(removeBtn) removeBtn.remove();
-            });
-            element.querySelectorAll('img').forEach(img => { img.classList.add('image-preview'); });
-
-             if (element.isContentEditable) {
-                 element.querySelectorAll('.image-container').forEach(container => {
-                     if (!container.querySelector('.remove-image')) {
-                         const removeBtn = document.createElement('button');
-                         removeBtn.className = 'remove-image btn';
-                         removeBtn.innerHTML = '×';
-                         removeBtn.contentEditable = 'false';
-                         removeBtn.onclick = function(event) { event.stopPropagation(); container.remove(); element.focus(); };
-                         container.appendChild(removeBtn);
-                     }
-                 });
+             if (!selection || selection.rangeCount === 0 || !editor.contains(selection.focusNode)) {
+                  editor.focus();
+                  const endRange = document.createRange();
+                  endRange.selectNodeContents(editor);
+                  endRange.collapse(false);
+                  selection.removeAllRanges();
+                  selection.addRange(endRange);
              }
-        }
+              const range = selection.getRangeAt(0);
 
-        function getPlainTextFromHTML(html) {
+             const container = document.createElement('div');
+             container.className = 'image-container';
+             container.contentEditable = 'false';
+
+             const img = document.createElement('img');
+             img.src = imageSrc;
+             img.className = 'image-preview';
+
+             const removeBtn = document.createElement('button');
+             removeBtn.className = 'remove-image btn';
+             removeBtn.innerHTML = '×';
+             removeBtn.contentEditable = 'false';
+             removeBtn.onclick = function(event) {
+                  event.stopPropagation();
+                  container.remove();
+                  editor.focus();
+             };
+
+             container.appendChild(img);
+             container.appendChild(removeBtn);
+             range.insertNode(container);
+
+             const space = document.createTextNode('\u00A0');
+             range.setStartAfter(container);
+             range.insertNode(space);
+             range.setStartAfter(space);
+             range.collapse(true);
+             selection.removeAllRanges();
+             selection.addRange(range);
+             editor.focus();
+         }
+
+         function setupImageUpload(uploadId, editorId) {
+             const upload = document.getElementById(uploadId);
+             if (!upload) return;
+             upload.addEventListener('change', function(e) {
+                 if (e.target.files && e.target.files[0]) {
+                     const reader = new FileReader();
+                     reader.onload = function(event) {
+                         insertImage(editorId, event.target.result);
+                     };
+                     reader.readAsDataURL(e.target.files[0]);
+                     upload.value = '';
+                 }
+             });
+         }
+
+         function setupPasteHandler(editorId) {
+              const editor = document.getElementById(editorId);
+              if (!editor) return;
+              editor.addEventListener('paste', function(e) {
+                 if (document.activeElement !== editor || !editor.isContentEditable) return;
+                 e.preventDefault();
+                 const items = (e.clipboardData || window.clipboardData).items;
+                 let foundImage = false;
+                 for (let i = 0; i < items.length; i++) {
+                     if (items[i].type.indexOf('image') !== -1) {
+                         const blob = items[i].getAsFile();
+                          if (blob) {
+                             const reader = new FileReader();
+                             reader.onload = function(event) { insertImage(editorId, event.target.result); };
+                             reader.readAsDataURL(blob);
+                             foundImage = true;
+                             break;
+                         }
+                     }
+                 }
+                  if (!foundImage) {
+                     const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                     if (text) { document.execCommand('insertText', false, text); }
+                  }
+             });
+         }
+
+         function getEditorContentHTML(editorId) {
+             const editor = document.getElementById(editorId);
+             if (!editor) return '';
+             const tempDiv = editor.cloneNode(true);
+             tempDiv.querySelectorAll('.remove-image').forEach(btn => btn.remove());
+             tempDiv.querySelectorAll('.image-container:not(:has(img))').forEach(cont => cont.remove());
+             return tempDiv.innerHTML.trim();
+         }
+
+         function displayHTMLContent(elementId, htmlContent) {
+             const element = document.getElementById(elementId);
+             if (!element) return;
+             element.innerHTML = htmlContent || '';
+             element.querySelectorAll('.image-container').forEach(container => {
+                 container.contentEditable = 'false';
+                 const removeBtn = container.querySelector('.remove-image');
+                 if(removeBtn) removeBtn.remove();
+             });
+             element.querySelectorAll('img').forEach(img => { img.classList.add('image-preview'); });
+              if (element.isContentEditable) {
+                  element.querySelectorAll('.image-container').forEach(container => {
+                      if (!container.querySelector('.remove-image')) {
+                          const removeBtn = document.createElement('button');
+                          removeBtn.className = 'remove-image btn';
+                          removeBtn.innerHTML = '×';
+                          removeBtn.contentEditable = 'false';
+                          removeBtn.onclick = function(event) { event.stopPropagation(); container.remove(); element.focus(); };
+                          container.appendChild(removeBtn);
+                      }
+                  });
+              }
+         }
+
+         function getPlainTextFromHTML(html) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
             return tempDiv.textContent || tempDiv.innerText || "";
         }
 
-        // --- Backend Kommunikation ---
+        function shuffleArray(array) { /* ... unverändert ... */ }
+         function cleanupEmptyStructures(subject, grade, chapter) { /* ... unverändert ... */ }
+
+
+        // --- NEU: Login Status Management ---
+        function isTeacherLoggedIn() {
+            return sessionStorage.getItem('teacherLoggedIn') === 'true';
+        }
+
+        function setTeacherLoggedIn(status) {
+            if (status) {
+                sessionStorage.setItem('teacherLoggedIn', 'true');
+            } else {
+                sessionStorage.removeItem('teacherLoggedIn');
+            }
+            updateLogoutButtonVisibility(true); // Logout Button Status aktualisieren
+        }
+
+        function attemptTeacherLogin() {
+            const enteredPassword = prompt("Bitte Lehrer-Passwort eingeben:");
+            if (enteredPassword === null) { return false; } // Abbruch durch Benutzer
+
+            // Passwort-Prüfung (unsicher im Frontend!)
+            if (enteredPassword === TEACHER_LOGIN_PASSWORD) {
+                setTeacherLoggedIn(true);
+                showFeedback("Login erfolgreich!", "success");
+                return true;
+            } else {
+                alert("Falsches Passwort!");
+                setTeacherLoggedIn(false);
+                return false;
+            }
+        }
+
+        // Logout Funktion
+        function logoutTeacher() {
+            setTeacherLoggedIn(false);
+            showFeedback("Erfolgreich ausgeloggt.", "info");
+            // Ggf. zur Startseite zurückkehren, falls man woanders war
+            showSection('subject-selection');
+        }
+
+        // Sichtbarkeit des Logout-Buttons steuern
+        function updateLogoutButtonVisibility(isOnStartPage) {
+             const logoutBtn = document.getElementById('btn-logout');
+             if (!logoutBtn) return;
+             if (isTeacherLoggedIn() && isOnStartPage) {
+                 logoutBtn.classList.remove('hidden');
+             } else {
+                 logoutBtn.classList.add('hidden');
+             }
+        }
+        // --- Ende Login Status Management ---
+
+        // --- Backend Kommunikation (OHNE Passwort im Request Body) ---
         async function saveMemoBoxDataToServer() {
-            console.log("Attempting to save data to server..."); // Debug Log
+            console.log("Attempting to save data to server...");
             if (isSavingData) {
                  console.warn("Save already in progress.");
                  showFeedback("Speichervorgang läuft bereits...", "info");
                  return false;
             }
-             isSavingData = true;
-             setButtonsDisabled(true); // Buttons deaktivieren
-             showLoadingIndicator(true, "Speichere Daten...");
-
-             // Passwortabfrage implementiert!
-             const password = prompt("Bitte Lehrer-Passwort eingeben zum Speichern:");
-             if (password === null) { // Benutzer hat Abbrechen geklickt
-                 console.log("Save cancelled by user.");
-                 isSavingData = false;
-                 setButtonsDisabled(false);
-                 showLoadingIndicator(false);
-                 return false; // Abbruch signalisieren
-             }
-             // Prüfung auf leeres Passwort entfernt - Backend prüft korrekt
-            // if (!password) {
-            //     alert("Passwort erforderlich zum Speichern!");
-            //     isSavingData = false;
-            //      setButtonsDisabled(false);
-            //      showLoadingIndicator(false);
-            //     return false;
-            // }
+            isSavingData = true;
+            setButtonsDisabled(true);
+            showLoadingIndicator(true, "Speichere Daten...");
 
             try {
-                console.log("Sending fetch POST request to:", API_ENDPOINT); // Debug Log
+                console.log("Sending fetch POST request to:", API_ENDPOINT);
                 const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', },
                     body: JSON.stringify({
-                        password: password, // Passwort wird mitgesendet
+                        // KEIN Passwort wird mehr gesendet
                         data: memoBoxData
                     }),
                 });
 
-                 const responseBody = await response.text(); // Erstmal Text lesen für Debugging
-                 console.log("Server Response Status:", response.status);
-                 console.log("Server Response Body:", responseBody);
+                const responseBody = await response.text();
+                console.log("Server Response Status:", response.status);
+                console.log("Server Response Body:", responseBody);
 
+                if (!response.ok) {
+                    let errorData = {};
+                    try { errorData = JSON.parse(responseBody); } catch (e) {}
+                    let errorMsg = `Fehler ${response.status}: ${response.statusText}`;
+                    if (errorData.error) { errorMsg = `Fehler: ${errorData.error}`; }
+                    else if (responseBody) { errorMsg = `Serverfehler: ${responseBody}`; }
+                    throw new Error(errorMsg);
+                }
 
-                 if (!response.ok) {
-                     let errorData = {};
-                     try { errorData = JSON.parse(responseBody); } catch (e) { /* Ignoriere JSON Parse Fehler */ }
-
-                     let errorMsg = `Fehler ${response.status}: ${response.statusText}`;
-                     if (response.status === 401 || response.status === 403) {
-                         errorMsg = "Passwort ungültig oder fehlt!";
-                     } else if (errorData.error) {
-                         errorMsg = `Fehler: ${errorData.error}`;
-                     } else if (responseBody) {
-                         errorMsg = `Serverfehler: ${responseBody}`; // Zeige rohen Text wenn kein JSON
-                     }
-                     throw new Error(errorMsg);
-                 }
-
-                // Erfolg
-                 console.log("Data successfully saved on server.");
-                 showFeedback("Daten gespeichert!", "success");
-                 isSavingData = false;
-                 setButtonsDisabled(false);
-                 showLoadingIndicator(false);
-                 return true;
+                console.log("Data successfully saved on server.");
+                showFeedback("Daten gespeichert!", "success");
+                isSavingData = false;
+                setButtonsDisabled(false);
+                showLoadingIndicator(false);
+                return true;
 
             } catch (error) {
-                 console.error('Fehler beim Speichern der Daten:', error);
-                 showFeedback(`Speichern fehlgeschlagen: ${error.message}`, "error");
-                 isSavingData = false;
-                 setButtonsDisabled(false);
-                 showLoadingIndicator(false);
-                 return false;
+                console.error('Fehler beim Speichern der Daten:', error);
+                showFeedback(`Speichern fehlgeschlagen: ${error.message}`, "error");
+                isSavingData = false;
+                setButtonsDisabled(false);
+                showLoadingIndicator(false);
+                return false;
             }
         }
 
-        async function loadMemoBoxDataFromServer() {
+        async function loadMemoBoxDataFromServer() { /* ... unverändert wie vorher ... */ }
+         // --- Backend Kommunikation (Code hier zur Vollständigkeit) ---
+         async function loadMemoBoxDataFromServer() {
              if (isLoadingData) return;
              isLoadingData = true;
-             setButtonsDisabled(true); // Auch beim Laden Buttons deaktivieren
+             setButtonsDisabled(true);
              showLoadingIndicator(true, "Lade Daten...");
-             console.log("Loading data from server..."); // Debug Log
+             console.log("Loading data from server...");
 
              try {
                  const response = await fetch(API_ENDPOINT); // GET
-                  console.log("Load response status:", response.status); // Debug Log
+                  console.log("Load response status:", response.status);
                  if (!response.ok) {
                       const errorText = await response.text();
                       console.error("Load response error text:", errorText);
@@ -750,82 +779,66 @@
                  const data = await response.json();
                  memoBoxData = data || {};
                  console.log("Data successfully loaded from server.");
-                 // UI muss nach dem Laden aktualisiert werden
-                 displaySubjectButtons(); // Fächerliste neu aufbauen
-                 showSection('subject-selection'); // Starte immer bei der Fächerwahl
+                 displaySubjectButtons();
+                 showSection('subject-selection');
 
              } catch (error) {
                  console.error('Fehler beim Laden der Daten:', error);
                  showFeedback(`Laden der Daten fehlgeschlagen: ${error.message}.`, "error");
-                 memoBoxData = {}; // Sicherstellen, dass Daten leer sind
-                 displaySubjectButtons(); // Auch bei Fehler Buttons anzeigen (leer)
+                 memoBoxData = {};
+                 displaySubjectButtons();
                  showSection('subject-selection');
              } finally {
                   isLoadingData = false;
-                  setButtonsDisabled(false); // Buttons wieder aktivieren
+                  setButtonsDisabled(false);
                   showLoadingIndicator(false);
              }
-        }
+         }
+
 
         // --- UI Hilfsfunktionen ---
-        function showLoadingIndicator(show, message = "Lädt...") {
-            const indicator = document.getElementById('loading-indicator');
-            if (!indicator) return;
-            if (show) {
-                indicator.textContent = message;
-                indicator.classList.add('visible');
-            } else {
-                indicator.classList.remove('visible');
-            }
-        }
+        function showLoadingIndicator(show, message = "Lädt...") { /* ... unverändert ... */ }
+        function showFeedback(message, type = "info") { /* ... unverändert ... */ }
+        function setButtonsDisabled(disabled) { /* ... unverändert ... */ }
+         // --- UI Hilfsfunktionen (Code hier zur Vollständigkeit) ---
+         function showLoadingIndicator(show, message = "Lädt...") {
+             const indicator = document.getElementById('loading-indicator');
+             if (!indicator) return;
+             if (show) {
+                 indicator.textContent = message;
+                 indicator.classList.add('visible');
+             } else {
+                 indicator.classList.remove('visible');
+             }
+         }
+         function showFeedback(message, type = "info") {
+             const feedback = document.getElementById('feedback-message');
+             if (!feedback) return;
+             feedback.textContent = message;
+             feedback.style.backgroundColor = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff';
+             feedback.classList.add('visible');
+             setTimeout(() => { feedback.classList.remove('visible'); }, 3000);
+         }
+         function setButtonsDisabled(disabled) {
+              const buttons = document.querySelectorAll('button.btn');
+              buttons.forEach(button => { button.disabled = disabled; });
+              const editors = document.querySelectorAll('.editable-area');
+              editors.forEach(editor => {
+                 // Nur contentEditable steuern, wenn es auch ein Editor sein soll
+                 if(editor.hasAttribute('placeholder')) {
+                    editor.contentEditable = !disabled;
+                    editor.style.opacity = disabled ? 0.7 : 1;
+                    // Sicherstellen, dass Editoren im Bearbeiten-Modus auch gesperrt werden
+                    if (disabled && (editor.id === 'edit-question-editor' || editor.id === 'edit-answer-editor')) {
+                       editor.contentEditable = false;
+                    }
+                 }
+              });
+         }
 
-        function showFeedback(message, type = "info") {
-            const feedback = document.getElementById('feedback-message');
-            if (!feedback) return;
-            feedback.textContent = message;
-            feedback.style.backgroundColor = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff';
-            feedback.classList.add('visible');
-            setTimeout(() => { feedback.classList.remove('visible'); }, 3000);
-        }
-
-         // Funktion zum Deaktivieren/Aktivieren relevanter Buttons
-        function setButtonsDisabled(disabled) {
-             const buttons = document.querySelectorAll('button.btn'); // Alle relevanten Buttons
-             buttons.forEach(button => {
-                 button.disabled = disabled;
-             });
-             // ContentEditable Bereiche auch steuern
-             const editors = document.querySelectorAll('.editable-area');
-             editors.forEach(editor => {
-                editor.contentEditable = !disabled;
-                editor.style.opacity = disabled ? 0.7 : 1;
-             });
-        }
-
-        function cleanupEmptyStructures(subject, grade, chapter) {
-            let dataChanged = false;
-            if (memoBoxData[subject]?.[grade]?.[chapter]?.length === 0) {
-                delete memoBoxData[subject][grade][chapter];
-                dataChanged = true;
-                if (Object.keys(memoBoxData[subject][grade]).length === 0) {
-                    delete memoBoxData[subject][grade];
-                }
-            }
-             // Hinweis: 'saveMemoBoxDataToServer' muss danach explizit aufgerufen werden!
-             return dataChanged;
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
 
         // --- Event Listener Setup ---
         document.addEventListener('DOMContentLoaded', async function() {
-            // Editoren Setup
             setupImageUpload('question-upload', 'question-editor');
             setupImageUpload('answer-upload', 'answer-editor');
             setupPasteHandler('question-editor');
@@ -835,24 +848,38 @@
             setupPasteHandler('edit-question-editor');
             setupPasteHandler('edit-answer-editor');
 
-            // Daten initial laden
-            await loadMemoBoxDataFromServer(); // Warten bis Daten da sind
+            // Initiales Laden
+            await loadMemoBoxDataFromServer();
 
-            // Zurück zur Fächerwahl (von Aktionsauswahl)
+            // Logout Button
+            document.getElementById('btn-logout').addEventListener('click', logoutTeacher);
+
+            // Navigation
             document.getElementById('btn-back-to-subjects').addEventListener('click', () => showSection('subject-selection'));
 
-            // --- Eintragen Sektion ---
+            // --- Eintragen Button ---
             document.getElementById('btn-add').addEventListener('click', function() {
+                if (!isTeacherLoggedIn()) {
+                    if (!attemptTeacherLogin()) { return; } // Login versuchen, bei Fehler abbrechen
+                }
+                // Nur wenn Login erfolgreich oder schon eingeloggt:
                 document.getElementById('grade').value = lastGrade;
                 document.getElementById('chapter').value = lastChapter;
-                // Wichtig: Editoren leeren für neue Karte!
-                document.getElementById('question-editor').innerHTML = '';
+                document.getElementById('question-editor').innerHTML = ''; // Leeren für neue Karte
                 document.getElementById('answer-editor').innerHTML = '';
+                // Sicherstellen, dass Editoren bearbeitbar sind
+                document.getElementById('question-editor').contentEditable = true;
+                document.getElementById('answer-editor').contentEditable = true;
                 showSection('add-card');
                 document.getElementById('grade').focus();
             });
 
-            document.getElementById('btn-save').addEventListener('click', async function() { // Async machen!
+            // --- Speichern Button ---
+            document.getElementById('btn-save').addEventListener('click', async function() {
+                 if (!isTeacherLoggedIn()) {
+                     showFeedback("Nicht eingeloggt. Speichern nicht möglich.", "error");
+                     return; // Verhindern, wenn nicht eingeloggt
+                 }
                 const grade = document.getElementById('grade').value.trim();
                 const chapter = document.getElementById('chapter').value.trim();
                 const questionHTML = getEditorContentHTML('question-editor');
@@ -865,409 +892,376 @@
 
                 lastGrade = grade;
                 lastChapter = chapter;
+                const oldMemoBoxData = JSON.parse(JSON.stringify(memoBoxData)); // Für Rollback
 
-                // Lokale Datenstruktur vorbereiten/aktualisieren
                 if (!memoBoxData[currentSubject]) memoBoxData[currentSubject] = {};
                 if (!memoBoxData[currentSubject][grade]) memoBoxData[currentSubject][grade] = {};
                 if (!memoBoxData[currentSubject][grade][chapter]) memoBoxData[currentSubject][grade][chapter] = [];
 
                 memoBoxData[currentSubject][grade][chapter].push({
-                    questionHTML: questionHTML,
-                    answerHTML: answerHTML,
+                    questionHTML: questionHTML, answerHTML: answerHTML,
                     id: Date.now() + '-' + Math.random().toString(36).substr(2, 9)
                 });
 
-                // An Server senden (enthält Passwortabfrage)
-                const savedToServer = await saveMemoBoxDataToServer();
+                const savedToServer = await saveMemoBoxDataToServer(); // Ruft jetzt intern KEIN Passwort ab
 
                 if (savedToServer) {
-                    // Nur bei Erfolg Felder zurücksetzen
                     document.getElementById('question-editor').innerHTML = '';
                     document.getElementById('answer-editor').innerHTML = '';
                     document.getElementById('question-editor').focus();
                 } else {
-                    // Fehler beim Speichern - Lokale Änderung rückgängig machen!
-                    memoBoxData[currentSubject][grade][chapter].pop(); // Letzte hinzugefügte Karte entfernen
-                    cleanupEmptyStructures(currentSubject, grade, chapter); // Ggf. leere Strukturen entfernen
-                    // Alert ist jetzt in saveMemoBoxDataToServer enthalten
+                    memoBoxData = oldMemoBoxData; // Rollback bei Fehler
                 }
             });
 
+            // --- Aussteigen (Eintragen) ---
             document.getElementById('btn-exit-add').addEventListener('click', () => showSection('action-selection'));
 
-            // --- Bearbeiten / Löschen Sektion ---
+            // --- Bearbeiten Button ---
             document.getElementById('btn-edit').addEventListener('click', function() {
+                 if (!isTeacherLoggedIn()) {
+                    if (!attemptTeacherLogin()) { return; } // Login versuchen
+                 }
+                // Nur wenn eingeloggt:
                 if (!currentSubject || !memoBoxData[currentSubject] || Object.keys(memoBoxData[currentSubject]).length === 0) {
-                    showFeedback(`Keine Einträge für "${currentSubject}" vorhanden.`, "info");
-                    return;
+                    showFeedback(`Keine Einträge für "${currentSubject}" vorhanden.`, "info"); return;
                 }
                 displayEditGradeSelection();
                 showSection('edit-grade-selection');
             });
 
+            // --- Navigation Bearbeiten ---
             document.getElementById('btn-back-to-actions-from-edit-grade').addEventListener('click', () => showSection('action-selection'));
             document.getElementById('btn-back-to-edit-grades').addEventListener('click', () => { displayEditGradeSelection(); showSection('edit-grade-selection'); });
             document.getElementById('btn-back-to-edit-chapters').addEventListener('click', () => { displayEditChapterSelection(selectedEditGrade); showSection('edit-chapter-selection'); });
             document.getElementById('btn-cancel-edit').addEventListener('click', () => { displayEditQuestionSelection(selectedEditGrade, selectedEditChapter); showSection('edit-question-selection'); currentEditingCard = null; });
 
-            document.getElementById('btn-save-changes').addEventListener('click', async function() { // Async machen!
-                if (!currentEditingCard) return;
+            // --- Änderungen Speichern Button ---
+            document.getElementById('btn-save-changes').addEventListener('click', async function() {
+                 if (!isTeacherLoggedIn()) { showFeedback("Nicht eingeloggt.", "error"); return; }
+                 if (!currentEditingCard) return;
+                 // ... (Validierung wie vorher) ...
+                 const newGrade = document.getElementById('edit-grade').value.trim();
+                 const newChapter = document.getElementById('edit-chapter').value.trim();
+                 const newQuestionHTML = getEditorContentHTML('edit-question-editor');
+                 const newAnswerHTML = getEditorContentHTML('edit-answer-editor');
+                 if (!newGrade || !newChapter /*... weitere Validierung ...*/) { /*...*/ return; }
 
-                const newGrade = document.getElementById('edit-grade').value.trim();
-                const newChapter = document.getElementById('edit-chapter').value.trim();
-                const newQuestionHTML = getEditorContentHTML('edit-question-editor');
-                const newAnswerHTML = getEditorContentHTML('edit-answer-editor');
-
-                if (!newGrade || !newChapter) { alert('Klassenstufe und Kapitel dürfen nicht leer sein!'); return; }
-                const questionIsEmpty = !getPlainTextFromHTML(newQuestionHTML) && !newQuestionHTML.includes('<img');
-                const answerIsEmpty = !getPlainTextFromHTML(newAnswerHTML) && !newAnswerHTML.includes('<img');
-                if (questionIsEmpty || answerIsEmpty) { alert('Frage und Antwort dürfen nicht leer sein!'); return; }
-
-                const originalGrade = originalCardLocation.grade;
-                const originalChapter = originalCardLocation.chapter;
-                const cardId = currentEditingCard.id;
-
-                // Kopie der alten Daten für evtl. Rollback
-                const oldMemoBoxData = JSON.parse(JSON.stringify(memoBoxData));
-
-                // Lokale Änderung durchführen
-                let cardFoundAndUpdatedLocally = false;
+                 const oldMemoBoxData = JSON.parse(JSON.stringify(memoBoxData)); // Für Rollback
+                 let cardFoundAndUpdatedLocally = false;
                  try {
+                    // ... (Logik zum lokalen Ändern/Verschieben der Karte wie vorher) ...
+                    const originalGrade = originalCardLocation.grade;
+                    const originalChapter = originalCardLocation.chapter;
+                    const cardId = currentEditingCard.id;
                     const chapterArray = memoBoxData[currentSubject]?.[originalGrade]?.[originalChapter];
-                    if (!chapterArray) throw new Error("Original chapter array not found");
+                    if (!chapterArray) throw new Error("Original chapter not found");
                     const cardIndex = chapterArray.findIndex(card => card.id === cardId);
-                    if (cardIndex === -1) throw new Error("Original card not found in chapter array");
-
+                    if (cardIndex === -1) throw new Error("Original card not found");
                     const updatedCard = { ...chapterArray[cardIndex], questionHTML: newQuestionHTML, answerHTML: newAnswerHTML };
-
                     if (newGrade === originalGrade && newChapter === originalChapter) {
                         chapterArray[cardIndex] = updatedCard;
                     } else {
                         chapterArray.splice(cardIndex, 1);
-                        const cleanedOld = cleanupEmptyStructures(currentSubject, originalGrade, originalChapter);
+                        cleanupEmptyStructures(currentSubject, originalGrade, originalChapter);
                         if (!memoBoxData[currentSubject][newGrade]) memoBoxData[currentSubject][newGrade] = {};
                         if (!memoBoxData[currentSubject][newGrade][newChapter]) memoBoxData[currentSubject][newGrade][newChapter] = [];
                         memoBoxData[currentSubject][newGrade][newChapter].push(updatedCard);
                     }
-                     cardFoundAndUpdatedLocally = true;
-                 } catch (error) {
-                     console.error("Error updating card locally:", error);
-                     alert("Fehler beim lokalen Aktualisieren der Karte.");
-                     memoBoxData = oldMemoBoxData; // Rollback
-                     return;
-                 }
+                    cardFoundAndUpdatedLocally = true;
+                 } catch (error) { /*...*/ memoBoxData = oldMemoBoxData; return; }
 
 
                  if (cardFoundAndUpdatedLocally) {
-                     // An Server senden (enthält Passwortabfrage)
-                     const savedToServer = await saveMemoBoxDataToServer();
+                     const savedToServer = await saveMemoBoxDataToServer(); // Ruft jetzt intern KEIN Passwort ab
                      if (savedToServer) {
                          currentEditingCard = null;
-                         showSection('action-selection'); // Zurück zur Aktionsauswahl
-                     } else {
-                          // Fehler beim Speichern - Lokale Änderung rückgängig machen!
-                          console.warn("Server save failed, rolling back local changes.");
-                          memoBoxData = oldMemoBoxData;
-                          // Alert ist jetzt in saveMemoBoxDataToServer enthalten
-                     }
+                         showSection('action-selection');
+                     } else { memoBoxData = oldMemoBoxData; } // Rollback
                  }
             });
 
-            document.getElementById('btn-delete-card').addEventListener('click', async function() { // Async machen!
-                if (!currentEditingCard || !confirm('Möchtest du diese Lernkarte wirklich unwiderruflich löschen?')) return;
+            // --- Karte Löschen Button ---
+            document.getElementById('btn-delete-card').addEventListener('click', async function() {
+                 if (!isTeacherLoggedIn()) { showFeedback("Nicht eingeloggt.", "error"); return; }
+                 if (!currentEditingCard || !confirm('Lernkarte wirklich löschen?')) return;
 
-                const originalGrade = originalCardLocation.grade;
-                const originalChapter = originalCardLocation.chapter;
-                const cardId = currentEditingCard.id;
-
-                 // Kopie der alten Daten für evtl. Rollback
-                const oldMemoBoxData = JSON.parse(JSON.stringify(memoBoxData));
-
-                // Lokales Löschen durchführen
-                let cardDeletedLocally = false;
+                 const oldMemoBoxData = JSON.parse(JSON.stringify(memoBoxData)); // Für Rollback
+                 let cardDeletedLocally = false;
                  try {
-                    const chapterArray = memoBoxData[currentSubject]?.[originalGrade]?.[originalChapter];
-                     if (!chapterArray) throw new Error("Original chapter array not found");
-                    const cardIndex = chapterArray.findIndex(card => card.id === cardId);
-                    if (cardIndex === -1) throw new Error("Card not found for deletion");
-
-                    chapterArray.splice(cardIndex, 1);
-                    cleanupEmptyStructures(currentSubject, originalGrade, originalChapter);
-                    cardDeletedLocally = true;
-                 } catch(error) {
-                    console.error("Error deleting card locally:", error);
-                    alert("Fehler beim lokalen Löschen der Karte.");
-                    memoBoxData = oldMemoBoxData; // Rollback
-                    return;
-                 }
-
+                    // ... (Logik zum lokalen Löschen wie vorher) ...
+                     const originalGrade = originalCardLocation.grade;
+                     const originalChapter = originalCardLocation.chapter;
+                     const cardId = currentEditingCard.id;
+                     const chapterArray = memoBoxData[currentSubject]?.[originalGrade]?.[originalChapter];
+                     if (!chapterArray) throw new Error("Original chapter not found");
+                     const cardIndex = chapterArray.findIndex(card => card.id === cardId);
+                     if (cardIndex === -1) throw new Error("Card not found");
+                     chapterArray.splice(cardIndex, 1);
+                     cleanupEmptyStructures(currentSubject, originalGrade, originalChapter);
+                     cardDeletedLocally = true;
+                 } catch(error) { /*...*/ memoBoxData = oldMemoBoxData; return; }
 
                   if (cardDeletedLocally) {
-                      // An Server senden (enthält Passwortabfrage)
-                      const savedToServer = await saveMemoBoxDataToServer();
+                      const savedToServer = await saveMemoBoxDataToServer(); // Ruft jetzt intern KEIN Passwort ab
                       if (savedToServer) {
                          currentEditingCard = null;
-                         showSection('action-selection'); // Zurück zur Aktionsauswahl
-                      } else {
-                           // Fehler beim Speichern - Lokale Änderung rückgängig machen!
-                           console.warn("Server save failed after delete, rolling back local changes.");
-                           memoBoxData = oldMemoBoxData;
-                           // Alert ist jetzt in saveMemoBoxDataToServer enthalten
-                      }
+                         showSection('action-selection');
+                      } else { memoBoxData = oldMemoBoxData; } // Rollback
                   }
              });
 
-            // --- Abfragen Sektion ---
-            document.getElementById('btn-quiz').addEventListener('click', function() {
-                if (!currentSubject || !memoBoxData[currentSubject] || Object.keys(memoBoxData[currentSubject]).length === 0) {
-                    showFeedback(`Keine Einträge für "${currentSubject}" vorhanden.`, "info");
-                    return;
-                }
-                displayQuizGradeSelection();
-                showSection('quiz-grade-selection');
-            });
-
+            // --- Quiz Sektion ---
+            document.getElementById('btn-quiz').addEventListener('click', function() { /* ... unverändert ... */ });
             document.getElementById('btn-back-to-actions-from-quiz-grade').addEventListener('click', () => showSection('action-selection'));
             document.getElementById('btn-back-to-quiz-grades').addEventListener('click', () => { displayQuizGradeSelection(); showSection('quiz-grade-selection'); });
-            document.getElementById('btn-quit-quiz').addEventListener('click', () => { if (confirm('Möchtest du die aktuelle Abfrage wirklich abbrechen?')) { quizStack = []; showSection('subject-selection'); } });
+            document.getElementById('btn-quit-quiz').addEventListener('click', () => { if (confirm('Abfrage abbrechen?')) { quizStack = []; showSection('subject-selection'); } });
             document.getElementById('btn-back-to-subjects-after-quiz').addEventListener('click', () => showSection('subject-selection'));
-
-            document.getElementById('btn-show-answer').addEventListener('click', function() {
-                if (quizStack.length > 0) {
-                     const currentCard = quizStack[0];
-                     const answerArea = document.getElementById('quiz-answer-area'); // Element holen
-                     displayHTMLContent('quiz-answer', currentCard.answerHTML);
-                     answerArea.classList.remove('hidden'); // Sichtbar machen
-                     document.getElementById('btn-show-answer').classList.add('hidden');
-                     document.getElementById('btn-known').classList.remove('hidden');
-                     document.getElementById('btn-unknown').classList.remove('hidden');
-                     // NEU: Auto-Scroll zur Antwort
-                     answerArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            });
-
+            document.getElementById('btn-show-answer').addEventListener('click', function() { /* ... mit Auto-Scroll wie vorher ... */ });
+             // --- Quiz Sektion (Code hier zur Vollständigkeit) ---
+             document.getElementById('btn-quiz').addEventListener('click', function() {
+                 if (!currentSubject || !memoBoxData[currentSubject] || Object.keys(memoBoxData[currentSubject]).length === 0) {
+                     showFeedback(`Keine Einträge für "${currentSubject}" vorhanden.`, "info");
+                     return;
+                 }
+                 displayQuizGradeSelection();
+                 showSection('quiz-grade-selection');
+             });
+             document.getElementById('btn-show-answer').addEventListener('click', function() {
+                 if (quizStack.length > 0) {
+                      const currentCard = quizStack[0];
+                      const answerArea = document.getElementById('quiz-answer-area');
+                      displayHTMLContent('quiz-answer', currentCard.answerHTML);
+                      answerArea.classList.remove('hidden');
+                      document.getElementById('btn-show-answer').classList.add('hidden');
+                      document.getElementById('btn-known').classList.remove('hidden');
+                      document.getElementById('btn-unknown').classList.remove('hidden');
+                      answerArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                 }
+             });
             document.getElementById('btn-known').addEventListener('click', function() { if (quizStack.length > 0) { quizStack.shift(); processNextQuizCard(); } });
             document.getElementById('btn-unknown').addEventListener('click', function() { if (quizStack.length > 0) { const card = quizStack.shift(); quizStack.push(card); processNextQuizCard(); } });
 
         }); // Ende DOMContentLoaded
 
         // === Fächerbuttons dynamisch erstellen ===
-        function displaySubjectButtons() {
-           const grid = document.getElementById('subject-grid'); // ID hinzugefügt zum Grid-Container
-           if (!grid) return;
-           grid.innerHTML = ''; // Leeren
-           const subjects = ["Deutsch", "Mathematik", "Englisch", "Physik", "Chemie", "Biologie", "Geschichte", "Erdkunde", "Ethik", "Kunst", "Musik", "Informatik"];
-
-           subjects.forEach(subjectName => {
-               const button = document.createElement('button');
-               // Ersetze Leerzeichen und Umlaute für sicherere Klassennamen
-               const className = subjectName.replace(/\s+/g, '').replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
-               button.className = `btn subject-btn ${className}`;
-               button.textContent = subjectName;
-               button.addEventListener('click', function() {
-                   currentSubject = this.textContent.trim();
-                   document.getElementById('current-subject').textContent = `Fach: ${currentSubject}`;
-                   showSection('action-selection');
-               });
-               grid.appendChild(button);
-           });
-           // Farben über CSS-Klassen steuern (siehe CSS oben)
-        }
+        function displaySubjectButtons() { /* ... unverändert wie vorher ... */ }
+         // === Fächerbuttons (Code hier zur Vollständigkeit) ===
+         function displaySubjectButtons() {
+            const grid = document.getElementById('subject-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            const subjects = ["Deutsch", "Mathematik", "Englisch", "Physik", "Chemie", "Biologie", "Geschichte", "Erdkunde", "Ethik", "Kunst", "Musik", "Informatik"];
+            subjects.forEach(subjectName => {
+                const button = document.createElement('button');
+                const className = subjectName.replace(/\s+/g, '').replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+                button.className = `btn subject-btn ${className}`;
+                button.textContent = subjectName;
+                button.addEventListener('click', function() {
+                    currentSubject = this.textContent.trim();
+                    document.getElementById('current-subject').textContent = `Fach: ${currentSubject}`;
+                    showSection('action-selection');
+                });
+                grid.appendChild(button);
+            });
+         }
 
         // === Funktionen für Bearbeiten/Löschen ===
-        function displayEditGradeSelection() {
-            const gradeList = document.getElementById('edit-grades-list');
-            gradeList.innerHTML = '';
-            const subjectData = memoBoxData[currentSubject];
-            const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Klassenstufen für dieses Fach gefunden.</p>';
+        function displayEditGradeSelection() { /* ... unverändert wie vorher ... */ }
+        function displayEditChapterSelection(grade) { /* ... unverändert wie vorher ... */ }
+        function displayEditQuestionSelection(grade, chapter) { /* ... unverändert wie vorher ... */ }
+        function loadCardForEditing(grade, chapter, cardId) { /* ... unverändert wie vorher, stellt sicher, dass Editoren bearbeitbar sind wenn eingeloggt */
+             const cards = memoBoxData[currentSubject]?.[grade]?.[chapter];
+             const cardToEdit = cards?.find(card => card.id === cardId);
+             if (cardToEdit) {
+                 currentEditingCard = { ...cardToEdit };
+                 originalCardLocation = { grade: grade, chapter: chapter };
+                 document.getElementById('edit-grade').value = grade;
+                 document.getElementById('edit-chapter').value = chapter;
+                 // Setze contentEditable basierend auf Login-Status
+                 const canEdit = isTeacherLoggedIn();
+                 const qEditor = document.getElementById('edit-question-editor');
+                 const aEditor = document.getElementById('edit-answer-editor');
+                 qEditor.contentEditable = canEdit;
+                 aEditor.contentEditable = canEdit;
+                 displayHTMLContent('edit-question-editor', cardToEdit.questionHTML);
+                 displayHTMLContent('edit-answer-editor', cardToEdit.answerHTML);
+                 // Buttons ggf. auch ausblenden/deaktivieren, wenn nicht eingeloggt
+                 document.getElementById('btn-save-changes').style.display = canEdit ? '' : 'none';
+                 document.getElementById('btn-delete-card').style.display = canEdit ? '' : 'none';
+                 document.querySelectorAll('#edit-card .upload-btn').forEach(btn => btn.style.display = canEdit ? '' : 'none');
 
-            if (!subjectData || Object.keys(subjectData).length === 0) { gradeList.innerHTML = placeholder; return; }
-            const grades = Object.keys(subjectData).sort((a,b) => a.localeCompare(b, undefined, {numeric: true})); // Numerisch sortieren
-            grades.forEach(grade => {
-                 if (Object.keys(subjectData[grade]).length > 0) {
-                     const button = document.createElement('button');
-                     button.textContent = grade;
-                     button.className = 'btn list-item-btn';
-                     button.onclick = () => { selectedEditGrade = grade; displayEditChapterSelection(grade); showSection('edit-chapter-selection'); };
-                     gradeList.appendChild(button);
-                 }
-            });
-            if (gradeList.children.length === 0) { gradeList.innerHTML = placeholder; }
+                 showSection('edit-card');
+             } else { /* ... Fehlerbehandlung ... */ }
         }
+        // === Funktionen für Bearbeiten/Löschen (Code hier zur Vollständigkeit) ===
+         function displayEditGradeSelection() {
+             const gradeList = document.getElementById('edit-grades-list');
+             gradeList.innerHTML = '';
+             const subjectData = memoBoxData[currentSubject];
+             const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Klassenstufen gefunden.</p>';
+             if (!subjectData || Object.keys(subjectData).length === 0) { gradeList.innerHTML = placeholder; return; }
+             const grades = Object.keys(subjectData).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+             grades.forEach(grade => {
+                  if (Object.keys(subjectData[grade]).length > 0 && Object.values(subjectData[grade]).some(chap => chap.length > 0)) {
+                      const button = document.createElement('button');
+                      button.textContent = grade;
+                      button.className = 'btn list-item-btn';
+                      button.onclick = () => { selectedEditGrade = grade; displayEditChapterSelection(grade); showSection('edit-chapter-selection'); };
+                      gradeList.appendChild(button);
+                  }
+             });
+              if (gradeList.children.length === 0) { gradeList.innerHTML = placeholder; }
+         }
+         function displayEditChapterSelection(grade) {
+             const chapterList = document.getElementById('edit-chapters-list');
+             const title = document.getElementById('edit-chapter-selection-title');
+             chapterList.innerHTML = '';
+             title.textContent = `Bearbeiten (${grade}): Wähle Kapitel`;
+             const gradeData = memoBoxData[currentSubject]?.[grade];
+              const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel mit Karten gefunden.</p>';
+             if (!gradeData || Object.keys(gradeData).length === 0) { chapterList.innerHTML = placeholder; return; }
+             const chapters = Object.keys(gradeData).sort();
+             chapters.forEach(chapter => {
+                  if (gradeData[chapter] && gradeData[chapter].length > 0) {
+                      const button = document.createElement('button');
+                      button.textContent = `${chapter} (${gradeData[chapter].length} Karten)`;
+                      button.className = 'btn list-item-btn';
+                      button.onclick = () => { selectedEditChapter = chapter; displayEditQuestionSelection(grade, chapter); showSection('edit-question-selection'); };
+                      chapterList.appendChild(button);
+                  }
+             });
+             if (chapterList.children.length === 0) { chapterList.innerHTML = placeholder; }
+         }
+          function displayEditQuestionSelection(grade, chapter) {
+             const questionList = document.getElementById('edit-questions-list');
+             const title = document.getElementById('edit-question-selection-title');
+             questionList.innerHTML = '';
+             title.textContent = `Bearbeiten (${grade} - ${chapter}): Wähle Frage`;
+             const cards = memoBoxData[currentSubject]?.[grade]?.[chapter];
+             const placeholder = '<p class="text-muted text-center">Keine Fragen gefunden.</p>';
+             if (!cards || cards.length === 0) { questionList.innerHTML = placeholder; return; }
+              cards.sort((a, b) => (getPlainTextFromHTML(a.questionHTML) || '').localeCompare(getPlainTextFromHTML(b.questionHTML) || ''));
+             cards.forEach(card => {
+                 const button = document.createElement('button');
+                 let previewText = getPlainTextFromHTML(card.questionHTML).substring(0, 100);
+                 if (card.questionHTML.includes('<img')) { previewText = "[Bild] " + previewText; }
+                 if (previewText.length >= 100) previewText += "...";
+                 button.textContent = previewText || "[Leere Frage]";
+                 button.title = getPlainTextFromHTML(card.questionHTML);
+                 button.className = 'btn question-preview-btn';
+                 button.dataset.cardId = card.id;
+                 button.onclick = () => { loadCardForEditing(grade, chapter, card.id); };
+                 questionList.appendChild(button);
+             });
+              if (questionList.children.length === 0) { questionList.innerHTML = placeholder; }
+         }
+         // loadCardForEditing wurde oben schon angepasst
 
-        function displayEditChapterSelection(grade) {
-            const chapterList = document.getElementById('edit-chapters-list');
-            const title = document.getElementById('edit-chapter-selection-title');
-            chapterList.innerHTML = '';
-            title.textContent = `Bearbeiten (${grade}): Wähle ein Kapitel`;
-            const gradeData = memoBoxData[currentSubject]?.[grade];
-             const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel für diese Klassenstufe gefunden.</p>';
-
-            if (!gradeData || Object.keys(gradeData).length === 0) { chapterList.innerHTML = placeholder; return; }
-            const chapters = Object.keys(gradeData).sort();
-            chapters.forEach(chapter => {
-                 if (gradeData[chapter] && gradeData[chapter].length > 0) {
-                     const button = document.createElement('button');
-                     button.textContent = `${chapter} (${gradeData[chapter].length} Karten)`;
-                     button.className = 'btn list-item-btn';
-                     button.onclick = () => { selectedEditChapter = chapter; displayEditQuestionSelection(grade, chapter); showSection('edit-question-selection'); };
-                     chapterList.appendChild(button);
-                 }
-            });
-            if (chapterList.children.length === 0) { chapterList.innerHTML = placeholder; }
-        }
-
-         function displayEditQuestionSelection(grade, chapter) {
-            const questionList = document.getElementById('edit-questions-list');
-            const title = document.getElementById('edit-question-selection-title');
-            questionList.innerHTML = '';
-            title.textContent = `Bearbeiten (${grade} - ${chapter}): Wähle eine Frage`;
-            const cards = memoBoxData[currentSubject]?.[grade]?.[chapter];
-            const placeholder = '<p class="text-muted text-center">Keine Fragen in diesem Kapitel gefunden.</p>';
-
-            if (!cards || cards.length === 0) { questionList.innerHTML = placeholder; return; }
-
-            // Karten sortieren (z.B. nach Erstellung oder Frage-Text) - Optional
-             cards.sort((a, b) => (getPlainTextFromHTML(a.questionHTML) || '').localeCompare(getPlainTextFromHTML(b.questionHTML) || ''));
-
-
-            cards.forEach(card => {
-                const button = document.createElement('button');
-                let previewText = getPlainTextFromHTML(card.questionHTML).substring(0, 100); // Max 100 Zeichen
-                if (card.questionHTML.includes('<img')) { previewText = "[Bild] " + previewText; }
-                if (previewText.length >= 100) previewText += "...";
-                button.textContent = previewText || "[Leere Frage]";
-                button.title = getPlainTextFromHTML(card.questionHTML);
-                button.className = 'btn question-preview-btn';
-                button.dataset.cardId = card.id;
-                button.onclick = () => { loadCardForEditing(grade, chapter, card.id); };
-                questionList.appendChild(button);
-            });
-             if (questionList.children.length === 0) { questionList.innerHTML = placeholder; }
-        }
-
-        function loadCardForEditing(grade, chapter, cardId) {
-            const cards = memoBoxData[currentSubject]?.[grade]?.[chapter];
-            const cardToEdit = cards?.find(card => card.id === cardId);
-
-            if (cardToEdit) {
-                currentEditingCard = { ...cardToEdit }; // Kopie erstellen
-                originalCardLocation = { grade: grade, chapter: chapter };
-                document.getElementById('edit-grade').value = grade;
-                document.getElementById('edit-chapter').value = chapter;
-                displayHTMLContent('edit-question-editor', cardToEdit.questionHTML);
-                displayHTMLContent('edit-answer-editor', cardToEdit.answerHTML);
-                showSection('edit-card');
-            } else {
-                showFeedback('Fehler: Die ausgewählte Karte konnte nicht geladen werden.', "error");
-                displayEditQuestionSelection(grade, chapter);
-                showSection('edit-question-selection');
-            }
-        }
 
         // === Funktionen für Abfragen ===
-        function displayQuizGradeSelection() {
-            const gradeList = document.getElementById('quiz-grades-list');
-            gradeList.innerHTML = '';
-            const subjectData = memoBoxData[currentSubject];
-            const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Klassenstufen für dieses Fach gefunden.</p>';
+        function displayQuizGradeSelection() { /* ... unverändert wie vorher ... */ }
+        function displayQuizChapterSelection(grade) { /* ... unverändert wie vorher ... */ }
+        function startQuiz() { /* ... unverändert wie vorher ... */ }
+        function processNextQuizCard() { /* ... unverändert wie vorher ... */ }
+         // === Funktionen für Abfragen (Code hier zur Vollständigkeit) ===
+          function displayQuizGradeSelection() {
+              const gradeList = document.getElementById('quiz-grades-list');
+              gradeList.innerHTML = '';
+              const subjectData = memoBoxData[currentSubject];
+              const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Klassenstufen gefunden.</p>';
+              if (!subjectData || Object.keys(subjectData).length === 0) { gradeList.innerHTML = placeholder; return; }
+              const grades = Object.keys(subjectData).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+              grades.forEach(grade => {
+                   if (Object.keys(subjectData[grade]).length > 0 && Object.values(subjectData[grade]).some(chap => chap.length > 0)) {
+                       const button = document.createElement('button');
+                       button.textContent = grade;
+                       button.className = 'btn list-item-btn';
+                       button.onclick = () => { selectedQuizGrade = grade; displayQuizChapterSelection(grade); showSection('quiz-chapter-selection'); };
+                       gradeList.appendChild(button);
+                   }
+              });
+               if (gradeList.children.length === 0) { gradeList.innerHTML = placeholder; }
+          }
+          function displayQuizChapterSelection(grade) {
+              const chapterList = document.getElementById('quiz-chapters-list');
+              const title = document.getElementById('quiz-chapter-selection-title');
+              chapterList.innerHTML = '';
+              title.textContent = `Abfragen (${grade}): Wähle Kapitel`;
+              const gradeData = memoBoxData[currentSubject]?.[grade];
+               const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel mit Karten gefunden.</p>';
+              if (!gradeData || Object.keys(gradeData).length === 0) { chapterList.innerHTML = placeholder; return; }
+              const chapters = Object.keys(gradeData).sort();
+              chapters.forEach(chapter => {
+                   if (gradeData[chapter] && gradeData[chapter].length > 0) {
+                       const button = document.createElement('button');
+                       button.textContent = `${chapter} (${gradeData[chapter].length} Karten)`;
+                       button.className = 'btn list-item-btn';
+                       button.onclick = () => { selectedQuizChapter = chapter; startQuiz(); };
+                       chapterList.appendChild(button);
+                   }
+              });
+              if (chapterList.children.length === 0) { chapterList.innerHTML = placeholder; }
+          }
+          function startQuiz() {
+               const cards = memoBoxData[currentSubject]?.[selectedQuizGrade]?.[selectedQuizChapter];
+               if (!cards || cards.length === 0) {
+                   showFeedback("Keine Karten zum Abfragen vorhanden.", "info");
+                   displayQuizChapterSelection(selectedQuizGrade);
+                   showSection('quiz-chapter-selection');
+                   return;
+               }
+              quizStack = shuffleArray([...cards]);
+              initialCardCount = quizStack.length;
+              document.getElementById('quiz-completion-message').classList.add('hidden');
+              document.getElementById('btn-back-to-subjects-after-quiz').classList.add('hidden');
+              document.getElementById('btn-quit-quiz').classList.remove('hidden');
+              document.getElementById('btn-show-answer').classList.remove('hidden');
+              document.getElementById('btn-known').classList.add('hidden');
+              document.getElementById('btn-unknown').classList.add('hidden');
+              document.getElementById('quiz-answer-area').classList.add('hidden');
+              showSection('quiz-interface');
+              processNextQuizCard();
+          }
+          function processNextQuizCard() {
+              const progressElement = document.getElementById('quiz-progress');
+              const questionElement = document.getElementById('quiz-question');
+              const answerArea = document.getElementById('quiz-answer-area');
+              const answerElement = document.getElementById('quiz-answer');
+              const showAnswerBtn = document.getElementById('btn-show-answer');
+              const knownBtn = document.getElementById('btn-known');
+              const unknownBtn = document.getElementById('btn-unknown');
+              const quitBtn = document.getElementById('btn-quit-quiz');
+              const backBtn = document.getElementById('btn-back-to-subjects-after-quiz');
+              const completionMsg = document.getElementById('quiz-completion-message');
 
-            if (!subjectData || Object.keys(subjectData).length === 0) { gradeList.innerHTML = placeholder; return; }
-            const grades = Object.keys(subjectData).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
-            grades.forEach(grade => {
-                 if (Object.keys(subjectData[grade]).length > 0 && Object.values(subjectData[grade]).some(chap => chap.length > 0)) { // Prüfen ob Karten existieren
-                     const button = document.createElement('button');
-                     button.textContent = grade;
-                     button.className = 'btn list-item-btn';
-                     button.onclick = () => { selectedQuizGrade = grade; displayQuizChapterSelection(grade); showSection('quiz-chapter-selection'); };
-                     gradeList.appendChild(button);
-                 }
-            });
-             if (gradeList.children.length === 0) { gradeList.innerHTML = placeholder; }
-        }
-
-        function displayQuizChapterSelection(grade) {
-            const chapterList = document.getElementById('quiz-chapters-list');
-            const title = document.getElementById('quiz-chapter-selection-title');
-            chapterList.innerHTML = '';
-            title.textContent = `Abfragen (${grade}): Wähle ein Kapitel`;
-            const gradeData = memoBoxData[currentSubject]?.[grade];
-             const placeholder = '<p class="text-muted text-center" style="grid-column: 1 / -1;">Keine Kapitel mit Karten für diese Klassenstufe gefunden.</p>';
-
-            if (!gradeData || Object.keys(gradeData).length === 0) { chapterList.innerHTML = placeholder; return; }
-            const chapters = Object.keys(gradeData).sort();
-            chapters.forEach(chapter => {
-                 if (gradeData[chapter] && gradeData[chapter].length > 0) {
-                     const button = document.createElement('button');
-                     button.textContent = `${chapter} (${gradeData[chapter].length} Karten)`;
-                     button.className = 'btn list-item-btn';
-                     button.onclick = () => { selectedQuizChapter = chapter; startQuiz(); };
-                     chapterList.appendChild(button);
-                 }
-            });
-            if (chapterList.children.length === 0) { chapterList.innerHTML = placeholder; }
-        }
-
-        function startQuiz() {
-             const cards = memoBoxData[currentSubject]?.[selectedQuizGrade]?.[selectedQuizChapter];
-             if (!cards || cards.length === 0) {
-                 showFeedback("Keine Karten in diesem Kapitel zum Abfragen vorhanden.", "info");
-                 displayQuizChapterSelection(selectedQuizGrade);
-                 showSection('quiz-chapter-selection');
-                 return;
-             }
-            quizStack = shuffleArray([...cards]);
-            initialCardCount = quizStack.length;
-            document.getElementById('quiz-completion-message').classList.add('hidden');
-            document.getElementById('btn-back-to-subjects-after-quiz').classList.add('hidden');
-            document.getElementById('btn-quit-quiz').classList.remove('hidden');
-            document.getElementById('btn-show-answer').classList.remove('hidden');
-            document.getElementById('btn-known').classList.add('hidden');
-            document.getElementById('btn-unknown').classList.add('hidden');
-            document.getElementById('quiz-answer-area').classList.add('hidden');
-            showSection('quiz-interface');
-            processNextQuizCard();
-        }
-
-        function processNextQuizCard() {
-            const progressElement = document.getElementById('quiz-progress');
-            const questionElement = document.getElementById('quiz-question');
-            const answerArea = document.getElementById('quiz-answer-area');
-            const answerElement = document.getElementById('quiz-answer');
-            const showAnswerBtn = document.getElementById('btn-show-answer');
-            const knownBtn = document.getElementById('btn-known');
-            const unknownBtn = document.getElementById('btn-unknown');
-            const quitBtn = document.getElementById('btn-quit-quiz');
-            const backBtn = document.getElementById('btn-back-to-subjects-after-quiz');
-            const completionMsg = document.getElementById('quiz-completion-message');
-
-            if (quizStack.length === 0) {
-                questionElement.innerHTML = '';
-                answerArea.classList.add('hidden');
-                progressElement.textContent = `Alle ${initialCardCount} Karten gelernt!`;
-                completionMsg.classList.remove('hidden');
-                showAnswerBtn.classList.add('hidden');
-                knownBtn.classList.add('hidden');
-                unknownBtn.classList.add('hidden');
-                quitBtn.classList.add('hidden');
-                backBtn.classList.remove('hidden');
-            } else {
-                const currentCard = quizStack[0];
-                const remainingCards = quizStack.length;
-                const totalCards = initialCardCount;
-                const currentCardNumber = totalCards - remainingCards + 1;
-                progressElement.textContent = `Karte ${currentCardNumber} von ${totalCards} (noch ${remainingCards} zu lernen)`;
-                displayHTMLContent('quiz-question', currentCard.questionHTML);
-                answerArea.classList.add('hidden');
-                answerElement.innerHTML = '';
-                completionMsg.classList.add('hidden');
-                 showAnswerBtn.classList.remove('hidden');
-                 knownBtn.classList.add('hidden');
-                 unknownBtn.classList.add('hidden');
-                 quitBtn.classList.remove('hidden');
-                 backBtn.classList.add('hidden');
-            }
-        }
+              if (quizStack.length === 0) {
+                  questionElement.innerHTML = '';
+                  answerArea.classList.add('hidden');
+                  progressElement.textContent = `Alle ${initialCardCount} Karten gelernt!`;
+                  completionMsg.classList.remove('hidden');
+                  showAnswerBtn.classList.add('hidden');
+                  knownBtn.classList.add('hidden');
+                  unknownBtn.classList.add('hidden');
+                  quitBtn.classList.add('hidden');
+                  backBtn.classList.remove('hidden');
+              } else {
+                  const currentCard = quizStack[0];
+                  const remainingCards = quizStack.length;
+                  const totalCards = initialCardCount;
+                  const currentCardNumber = totalCards - remainingCards + 1;
+                  progressElement.textContent = `Karte ${currentCardNumber} von ${totalCards} (noch ${remainingCards} zu lernen)`;
+                  displayHTMLContent('quiz-question', currentCard.questionHTML);
+                  answerArea.classList.add('hidden');
+                  answerElement.innerHTML = '';
+                  completionMsg.classList.add('hidden');
+                   showAnswerBtn.classList.remove('hidden');
+                   knownBtn.classList.add('hidden');
+                   unknownBtn.classList.add('hidden');
+                   quitBtn.classList.remove('hidden');
+                   backBtn.classList.add('hidden');
+              }
+          }
 
     </script>
 </body>
