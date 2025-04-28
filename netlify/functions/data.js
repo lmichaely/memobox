@@ -6,7 +6,9 @@ const { createClient } = require('@supabase/supabase-js');
 // --- Konfiguration ---
 // Supabase URL und Anon Key (AUS UMGEBUNGSVARIABLEN!)
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+// const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY; 
+// NEU
 
 // Name der Tabelle in Supabase
 const TABLE_NAME = 'memobox_storage';
@@ -20,13 +22,15 @@ const DATA_OBJECT_KEY = 'main_memobox_data_v1';
 let supabase = null;
 if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     try {
-        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+           supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     } catch (error) {
         console.error("Error initializing Supabase client:", error);
     }
 } else {
-    console.error("FATAL: Supabase URL or Anon Key environment variable is missing!");
-}
+    //console.error("FATAL: Supabase URL or Anon Key environment variable is missing!");
+    console.error("FATAL: Supabase URL or Service Role Key environment variable is missing!");
+  }
 
 // --- Hauptfunktion (Netlify Function Handler) ---
 exports.handler = async (event, context) => {
